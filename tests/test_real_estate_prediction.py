@@ -82,6 +82,17 @@ class RealEstatePredictionTests(unittest.TestCase):
         self.assertIn("rooms", message)
         self.assertIn("year_built", message)
 
+    def test_validate_property_input_rejects_inconsistent_floor_values(self):
+        invalid = dict(VALID_PROPERTY_INPUT, floor=9.0, total_floors=4.0)
+
+        with self.assertRaises(PropertyInputValidationError) as context:
+            validate_property_input(invalid)
+
+        message = str(context.exception)
+        self.assertIn("floor", message)
+        self.assertIn("total_floors", message)
+        self.assertIn("ne može biti veći", message)
+
     def test_predict_price_returns_finite_positive_value_for_valid_input(self):
         pipeline = fit_small_prediction_pipeline()
 

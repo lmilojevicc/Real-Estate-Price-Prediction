@@ -143,7 +143,7 @@ def render_prediction_tab(metadata: dict, pipeline) -> None:
             f"Okvirni raspon na osnovu MAE metrike najboljeg modela: {format_eur(lower)} - {format_eur(upper)}"
         )
     st.caption(
-        "Procena je informativna i zavisi od kvaliteta podataka, lokacije i karakteristika koje postoje u datasetu."
+        "Procena je orijentaciona i zavisi od kvaliteta podataka, lokacije i karakteristika koje postoje u datasetu."
     )
 
 

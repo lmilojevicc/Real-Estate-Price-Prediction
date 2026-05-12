@@ -42,49 +42,57 @@ def validate_property_input(property_input: dict[str, Any]) -> None:
 
     for field in ["city", "region", "heating_type", "parking"]:
         if not str(property_input.get(field, "")).strip():
-            errors.append(f"{field} is required")
+            errors.append(f"{field} je obavezno polje")
 
     try:
         area_m2 = float(property_input.get("area_m2"))
         if not 10 <= area_m2 <= 500:
-            errors.append("area_m2 must be between 10 and 500")
+            errors.append("area_m2 mora biti između 10 i 500")
     except (TypeError, ValueError):
-        errors.append("area_m2 must be a number between 10 and 500")
+        errors.append("area_m2 mora biti broj između 10 i 500")
 
     rooms = property_input.get("rooms")
     if not _is_missing(rooms) and rooms != "":
         try:
             rooms_value = float(rooms)
             if not 0.5 <= rooms_value <= 10:
-                errors.append("rooms must be between 0.5 and 10")
+                errors.append("rooms mora biti između 0.5 i 10")
         except (TypeError, ValueError):
-            errors.append("rooms must be a number between 0.5 and 10")
+            errors.append("rooms mora biti broj između 0.5 i 10")
 
     year_built = property_input.get("year_built")
     if not _is_missing(year_built) and year_built != "":
         try:
             year_value = float(year_built)
             if not 1800 <= year_value <= 2028:
-                errors.append("year_built must be between 1800 and 2028")
+                errors.append("year_built mora biti između 1800 i 2028")
         except (TypeError, ValueError):
-            errors.append("year_built must be a number between 1800 and 2028")
+            errors.append("year_built mora biti broj između 1800 i 2028")
 
     floor = property_input.get("floor")
     total_floors = property_input.get("total_floors")
+    floor_value = None
+    total_floors_value = None
     if not _is_missing(floor) and floor != "":
         try:
             floor_value = float(floor)
             if not -5 <= floor_value <= 200:
-                errors.append("floor must be between -5 and 200")
+                errors.append("floor mora biti između -5 i 200")
         except (TypeError, ValueError):
-            errors.append("floor must be a number")
+            errors.append("floor mora biti broj")
     if not _is_missing(total_floors) and total_floors != "":
         try:
             total_floors_value = float(total_floors)
             if not 0 <= total_floors_value <= 200:
-                errors.append("total_floors must be between 0 and 200")
+                errors.append("total_floors mora biti između 0 i 200")
         except (TypeError, ValueError):
-            errors.append("total_floors must be a number")
+            errors.append("total_floors mora biti broj")
+
+    if floor_value is not None and total_floors_value is not None:
+        if floor_value > total_floors_value:
+            errors.append("floor ne može biti veći od total_floors")
+        if total_floors_value == 0 and floor_value > 0:
+            errors.append("total_floors mora biti veći od nule za stan iznad prizemlja")
 
     if errors:
         raise PropertyInputValidationError("; ".join(errors))
