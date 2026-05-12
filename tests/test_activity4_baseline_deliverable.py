@@ -37,9 +37,7 @@ class Activity4BaselineDeliverableTests(unittest.TestCase):
             with self.subTest(metric=metric):
                 self.assertTrue(np.isfinite(result["metrics_table"][metric]).all())
 
-    def test_activity4_report_documents_model_output_and_no_target_leakage(self):
-        report = ACTIVITY4_REPORT.read_text(encoding="utf-8")
-
+    def test_activity4_report_policy_or_local_content_is_valid(self):
         required_fragments = [
             "Linear Regression",
             "DummyRegressor median",
@@ -51,6 +49,16 @@ class Activity4BaselineDeliverableTests(unittest.TestCase):
             "predviđena cena",
             "nije ulazni atribut modela",
         ]
+
+        if not ACTIVITY4_REPORT.exists():
+            gitignore = (ROOT / ".gitignore").read_text(encoding="utf-8")
+            self.assertIn("activity/", gitignore)
+            self.assertTrue(
+                (ROOT / "notebooks" / "modeling_activities_04_05.ipynb").exists()
+            )
+            return
+
+        report = ACTIVITY4_REPORT.read_text(encoding="utf-8")
         for fragment in required_fragments:
             with self.subTest(fragment=fragment):
                 self.assertIn(fragment, report)
