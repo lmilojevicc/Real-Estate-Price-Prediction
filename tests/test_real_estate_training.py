@@ -12,7 +12,10 @@ from src.training import (
     DEFAULT_MODEL_CANDIDATES,
     MODEL_ARTIFACT_NAME,
     MODEL_METADATA_NAME,
+    build_model_metadata,
     collect_ui_options,
+    prepare_modeling_data,
+    train_candidate_models,
     train_and_save_best_model,
 )
 
@@ -75,6 +78,59 @@ class RealEstateTrainingTests(unittest.TestCase):
         self.assertIn("Novi Sad", options["cities"])
         self.assertIn("Centralno", options["heating_types"])
         self.assertIn("Da", options["parking_options"])
+
+    def test_prepare_modeling_data_returns_raw_model_frame_and_cleaning_summary(self):
+        raw_df = build_training_fixture()
+        with tempfile.TemporaryDirectory() as tmpdir:
+            data_path = Path(tmpdir) / "fixture.csv"
+            raw_df.to_csv(data_path, index=False)
+
+            loaded_raw, model_df, cleaning_summary = prepare_modeling_data(data_path)
+
+        self.assertEqual(len(loaded_raw), len(raw_df))
+        self.assertGreater(len(model_df), 0)
+        self.assertIn("building_age", model_df.columns)
+        self.assertIn("price_eur", model_df.columns)
+        self.assertEqual(cleaning_summary["raw_rows"], len(raw_df))
+        self.assertEqual(cleaning_summary["cleaned_rows"], len(model_df))
+
+    def test_build_model_metadata_contains_portable_paths_metrics_ui_options_and_counts(self):
+        raw_df = build_training_fixture()
+        with tempfile.TemporaryDirectory() as tmpdir:
+            data_path = Path(tmpdir) / "fixture.csv"
+            artifact_path = Path(tmpdir) / "models" / MODEL_ARTIFACT_NAME
+            artifact_path.parent.mkdir()
+            raw_df.to_csv(data_path, index=False)
+            _, model_df, cleaning_summary = prepare_modeling_data(data_path)
+            training_result = train_candidate_models(
+                model_df,
+                candidate_specs=[
+                    ("Baseline - DummyRegressor median", "dummy_median"),
+                    ("LinearRegression", "linear_regression"),
+                ],
+                test_size=0.25,
+                random_state=42,
+            )
+
+            metadata = build_model_metadata(
+                training_result=training_result,
+                model_df=model_df,
+                cleaning_summary=cleaning_summary,
+                artifact_path=artifact_path,
+                data_path=data_path,
+                random_state=42,
+                test_size=0.25,
+            )
+
+        self.assertEqual(metadata["feature_columns"], training_result["feature_columns"])
+        self.assertEqual(len(metadata["metrics"]), 2)
+        self.assertIn(metadata["best_model_key"], {"dummy_median", "linear_regression"})
+        self.assertEqual(metadata["raw_rows"], len(raw_df))
+        self.assertEqual(metadata["cleaned_rows"], len(model_df))
+        self.assertEqual(metadata["test_size"], 0.25)
+        self.assertEqual(metadata["random_state"], 42)
+        self.assertIn("cities", metadata["ui_options"])
+        self.assertIn("mae", metadata["metrics"][0])
 
     def test_train_and_save_best_model_writes_prediction_artifact_and_metadata(self):
         raw_df = build_training_fixture()

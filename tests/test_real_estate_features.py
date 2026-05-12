@@ -6,6 +6,7 @@ import pandas as pd
 from src.features import (
     add_model_features,
     extract_total_floors,
+    normalize_categorical_values,
     parse_floor_values,
 )
 
@@ -27,6 +28,36 @@ class RealEstateFeatureEngineeringTests(unittest.TestCase):
         floor, total = parse_floor_values("Nepoznato")
         self.assertTrue(math.isnan(floor))
         self.assertTrue(math.isnan(total))
+
+    def test_parse_floor_values_handles_decimal_comma_and_numeric_only_floor(self):
+        self.assertEqual(parse_floor_values("2,5 / 6"), (2.5, 6.0))
+        floor, total = parse_floor_values("7")
+
+        self.assertEqual(floor, 7.0)
+        self.assertTrue(math.isnan(total))
+
+    def test_normalize_categorical_values_replaces_empty_dash_and_none(self):
+        df = pd.DataFrame(
+            {
+                "city": ["", "Beograd"],
+                "region": ["-", None],
+                "street": [None, "Glavna"],
+                "heating_type": ["Centralno", ""],
+                "parking": ["-", "Da"],
+                "raw_floor_string": ["", "2 / 5"],
+                "other": ["-", ""],
+            }
+        )
+
+        normalized = normalize_categorical_values(df)
+
+        self.assertEqual(normalized.loc[0, "city"], "Nepoznato")
+        self.assertEqual(normalized.loc[0, "region"], "Nepoznato")
+        self.assertEqual(normalized.loc[0, "street"], "Nepoznato")
+        self.assertEqual(normalized.loc[1, "heating_type"], "Nepoznato")
+        self.assertEqual(normalized.loc[0, "parking"], "Nepoznato")
+        self.assertEqual(normalized.loc[0, "raw_floor_string"], "Nepoznato")
+        self.assertEqual(normalized.loc[0, "other"], "-")
 
     def test_add_model_features_creates_numeric_location_and_text_features(self):
         df = pd.DataFrame(
@@ -111,6 +142,30 @@ class RealEstateFeatureEngineeringTests(unittest.TestCase):
         self.assertNotIn("price_per_m2", df.columns)
         self.assertNotIn("building_age", df.columns)
         self.assertNotIn("floor", df.columns)
+
+    def test_add_model_features_handles_zero_area_without_infinite_price_per_m2(self):
+        df = pd.DataFrame(
+            [
+                {
+                    "title": "Stan",
+                    "description": "Opis",
+                    "area_m2": 0.0,
+                    "price_eur": 80_000.0,
+                    "city": "Beograd",
+                    "region": "Centar",
+                    "street": "Glavna",
+                    "heating_type": "Centralno",
+                    "parking": "Ne",
+                    "raw_floor_string": "2/4",
+                    "rooms": 1.5,
+                    "year_built": 2000.0,
+                }
+            ]
+        )
+
+        engineered = add_model_features(df)
+
+        self.assertTrue(pd.isna(engineered.loc[0, "price_per_m2"]))
 
 
 if __name__ == "__main__":

@@ -12,6 +12,8 @@ from src.model_pipeline import build_model_pipeline, get_model_feature_columns
 from src.prediction import (
     PropertyInputValidationError,
     build_prediction_frame,
+    build_raw_floor_string,
+    estimate_price_range,
     load_prediction_artifact,
     predict_price,
     validate_property_input,
@@ -64,6 +66,7 @@ class RealEstatePredictionTests(unittest.TestCase):
             with self.subTest(column=column):
                 self.assertIn(column, frame.columns)
 
+        self.assertEqual(frame[get_model_feature_columns()].columns.tolist(), get_model_feature_columns())
         self.assertEqual(frame.loc[0, "city"], "Beograd")
         self.assertEqual(frame.loc[0, "region"], "Vracar")
         self.assertEqual(frame.loc[0, "is_lux"], 1)
@@ -82,6 +85,18 @@ class RealEstatePredictionTests(unittest.TestCase):
         self.assertIn("rooms", message)
         self.assertIn("year_built", message)
 
+    def test_validate_property_input_rejects_blank_required_categories(self):
+        invalid = dict(VALID_PROPERTY_INPUT, city=" ", region="", heating_type=None, parking="")
+
+        with self.assertRaises(PropertyInputValidationError) as context:
+            validate_property_input(invalid)
+
+        message = str(context.exception)
+        self.assertIn("city", message)
+        self.assertIn("region", message)
+        self.assertIn("heating_type", message)
+        self.assertIn("parking", message)
+
     def test_validate_property_input_rejects_inconsistent_floor_values(self):
         invalid = dict(VALID_PROPERTY_INPUT, floor=9.0, total_floors=4.0)
 
@@ -93,6 +108,13 @@ class RealEstatePredictionTests(unittest.TestCase):
         self.assertIn("total_floors", message)
         self.assertIn("ne može biti veći", message)
 
+    def test_build_raw_floor_string_formats_basement_ground_numeric_and_missing(self):
+        self.assertEqual(build_raw_floor_string(-1, 4), "Suteren / 4")
+        self.assertEqual(build_raw_floor_string(0, 3), "Prizemlje / 3")
+        self.assertEqual(build_raw_floor_string(2.5, 6), "2.5 / 6")
+        self.assertEqual(build_raw_floor_string(None, 6), "Nepoznato")
+        self.assertEqual(build_raw_floor_string(5, None), "5")
+
     def test_predict_price_returns_finite_positive_value_for_valid_input(self):
         pipeline = fit_small_prediction_pipeline()
 
@@ -101,6 +123,34 @@ class RealEstatePredictionTests(unittest.TestCase):
         self.assertIsInstance(prediction, float)
         self.assertTrue(np.isfinite(prediction))
         self.assertGreater(prediction, 0.0)
+
+    def test_predict_price_returns_distinct_values_for_distinct_valid_inputs(self):
+        pipeline = fit_small_prediction_pipeline()
+        smaller_input = dict(VALID_PROPERTY_INPUT, area_m2=40.0, rooms=1.5, is_lux=False)
+        larger_input = dict(
+            VALID_PROPERTY_INPUT,
+            city="Novi Sad",
+            region="Grbavica",
+            area_m2=100.0,
+            rooms=4.0,
+            is_duplex=True,
+        )
+
+        smaller_prediction = predict_price(pipeline, smaller_input)
+        larger_prediction = predict_price(pipeline, larger_input)
+
+        self.assertTrue(np.isfinite(smaller_prediction))
+        self.assertTrue(np.isfinite(larger_prediction))
+        self.assertGreater(smaller_prediction, 0.0)
+        self.assertGreater(larger_prediction, 0.0)
+        self.assertNotAlmostEqual(smaller_prediction, larger_prediction, delta=1.0)
+
+    def test_predict_price_rejects_invalid_property_input_before_inference(self):
+        pipeline = fit_small_prediction_pipeline()
+        invalid = dict(VALID_PROPERTY_INPUT, floor=8.0, total_floors=3.0)
+
+        with self.assertRaises(PropertyInputValidationError):
+            predict_price(pipeline, invalid)
 
     def test_load_prediction_artifact_reads_pipeline_and_metadata_files(self):
         pipeline = fit_small_prediction_pipeline()
@@ -120,6 +170,19 @@ class RealEstatePredictionTests(unittest.TestCase):
             prediction = predict_price(loaded_pipeline, VALID_PROPERTY_INPUT)
             self.assertEqual(loaded_metadata["best_model_name"], "LinearRegression")
             self.assertGreater(prediction, 0.0)
+
+    def test_load_prediction_artifact_raises_clear_error_when_artifact_missing(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            artifact_path = Path(tmpdir) / MODEL_ARTIFACT_NAME
+            metadata_path = Path(tmpdir) / MODEL_METADATA_NAME
+
+            with self.assertRaisesRegex(FileNotFoundError, "Model artifact not found"):
+                load_prediction_artifact(artifact_path=artifact_path, metadata_path=metadata_path)
+
+    def test_estimate_price_range_uses_mae_and_clamps_lower_bound(self):
+        self.assertEqual(estimate_price_range(100_000.0, 12_500.0), (87_500.0, 112_500.0))
+        self.assertEqual(estimate_price_range(5_000.0, 12_500.0), (0.0, 17_500.0))
+        self.assertIsNone(estimate_price_range(100_000.0, None))
 
 
 if __name__ == "__main__":

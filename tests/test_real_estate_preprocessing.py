@@ -4,6 +4,7 @@ import numpy as np
 import pandas as pd
 
 from src.preprocessing import build_preprocessor, get_model_feature_columns
+from src import model_pipeline
 
 
 class RealEstatePreprocessingTests(unittest.TestCase):
@@ -13,6 +14,9 @@ class RealEstatePreprocessingTests(unittest.TestCase):
         self.assertIn("area_m2", feature_columns)
         self.assertIn("city", feature_columns)
         self.assertNotIn("price_eur", feature_columns)
+
+    def test_preprocessing_and_model_pipeline_feature_columns_match(self):
+        self.assertEqual(get_model_feature_columns(), model_pipeline.get_model_feature_columns())
 
     def test_build_preprocessor_imputes_and_encodes_model_features(self):
         df = pd.DataFrame(
@@ -58,6 +62,15 @@ class RealEstatePreprocessingTests(unittest.TestCase):
         self.assertEqual(transformed.shape[0], 2)
         self.assertGreater(transformed.shape[1], len(get_model_feature_columns()))
         self.assertEqual(int(np.isnan(transformed).sum()), 0)
+
+    def test_preprocessing_and_model_pipeline_transformers_match_expected_features(self):
+        preprocessing_transformers = build_preprocessor().transformers
+        pipeline_transformers = model_pipeline.build_preprocessor().transformers
+
+        self.assertEqual(
+            [(name, columns) for name, _, columns in preprocessing_transformers],
+            [(name, columns) for name, _, columns in pipeline_transformers],
+        )
 
 
 if __name__ == "__main__":

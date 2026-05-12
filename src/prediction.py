@@ -41,7 +41,8 @@ def validate_property_input(property_input: dict[str, Any]) -> None:
     errors = []
 
     for field in ["city", "region", "heating_type", "parking"]:
-        if not str(property_input.get(field, "")).strip():
+        value = property_input.get(field, "")
+        if _is_missing(value) or not str(value).strip():
             errors.append(f"{field} je obavezno polje")
 
     try:
