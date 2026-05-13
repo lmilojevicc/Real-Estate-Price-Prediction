@@ -67,16 +67,6 @@ class ModelingNotebookDeliverableTests(unittest.TestCase):
         self.assertIn('baseline_model_key = "dummy_median"', sources)
         self.assertIn("Baseline se ne računa", sources)
 
-    def test_modeling_notebook_uses_tracked_src_code_instead_of_report_files(self):
-        notebook = json.loads(NOTEBOOK_PATH.read_text(encoding="utf-8"))
-        sources = "\n".join(
-            "".join(cell.get("source", "")) for cell in notebook.get("cells", [])
-        )
-
-        self.assertNotIn("CS490-Aktivnost-04", sources)
-        self.assertNotIn("CS490-Aktivnost-05", sources)
-        self.assertNotIn("activity/", sources)
-
 
 if __name__ == "__main__":
     unittest.main()

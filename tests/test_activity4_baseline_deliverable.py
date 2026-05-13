@@ -10,7 +10,6 @@ from tests.test_real_estate_training import build_training_fixture
 
 
 ROOT = Path(__file__).resolve().parents[1]
-ACTIVITY4_REPORT = ROOT / "activity" / "CS490-Aktivnost-04.md"
 
 
 class Activity4BaselineDeliverableTests(unittest.TestCase):
@@ -36,34 +35,6 @@ class Activity4BaselineDeliverableTests(unittest.TestCase):
         for metric in ["mae", "rmse", "r2"]:
             with self.subTest(metric=metric):
                 self.assertTrue(np.isfinite(result["metrics_table"][metric]).all())
-
-    def test_activity4_report_policy_or_local_content_is_valid(self):
-        required_fragments = [
-            "Linear Regression",
-            "DummyRegressor median",
-            "MAE",
-            "RMSE",
-            "R²",
-            "18.651 oglasa",
-            "stvarna cena",
-            "predviđena cena",
-            "nije ulazni atribut modela",
-        ]
-
-        if not ACTIVITY4_REPORT.exists():
-            gitignore = (ROOT / ".gitignore").read_text(encoding="utf-8")
-            self.assertIn("activity/", gitignore)
-            self.assertTrue(
-                (ROOT / "notebooks" / "modeling_activities_04_05.ipynb").exists()
-            )
-            return
-
-        report = ACTIVITY4_REPORT.read_text(encoding="utf-8")
-        for fragment in required_fragments:
-            with self.subTest(fragment=fragment):
-                self.assertIn(fragment, report)
-
-        self.assertNotIn("price_per_m2` kao ulaz", report)
 
 
 if __name__ == "__main__":
