@@ -9,6 +9,7 @@ from typing import Any
 import joblib
 import pandas as pd
 from sklearn.model_selection import train_test_split
+from tqdm import tqdm
 
 from src.data_cleaning import build_cleaned_dataset, create_cleaning_summary
 from src.evaluation import compare_regression_results, evaluate_regression_predictions
@@ -96,6 +97,7 @@ def train_candidate_models(
     candidate_specs: list[tuple[str, str]] | None = None,
     test_size: float = 0.2,
     random_state: int = 42,
+    show_progress: bool = False,
 ) -> dict[str, Any]:
     """Train candidate regressors and return fitted models, metrics, and split data."""
     specs = candidate_specs or DEFAULT_MODEL_CANDIDATES
@@ -111,7 +113,13 @@ def train_candidate_models(
 
     fitted_models = {}
     results = []
-    for display_name, model_key in specs:
+    progress_specs = tqdm(
+        specs,
+        desc="Training model candidates",
+        unit="model",
+        disable=not show_progress,
+    )
+    for display_name, model_key in progress_specs:
         pipeline = build_model_pipeline(model_key)
         pipeline.fit(X_train, y_train)
         predictions = pipeline.predict(X_test)
@@ -182,6 +190,7 @@ def train_and_save_best_model(
     test_size: float = 0.2,
     random_state: int = 42,
     current_year: int = 2026,
+    show_progress: bool = False,
 ) -> dict[str, Any]:
     """Train all candidates, save the best pipeline, and write model metadata."""
     data_path = Path(data_path)
@@ -197,6 +206,7 @@ def train_and_save_best_model(
         candidate_specs=candidate_specs,
         test_size=test_size,
         random_state=random_state,
+        show_progress=show_progress,
     )
 
     artifact_path = models_dir / MODEL_ARTIFACT_NAME
@@ -230,7 +240,7 @@ def train_and_save_best_model(
 
 def main() -> None:
     """CLI entrypoint used before running the Streamlit app."""
-    result = train_and_save_best_model()
+    result = train_and_save_best_model(show_progress=True)
     metadata = result["metadata"]
     print(f"Saved model artifact: {result['artifact_path']}")
     print(f"Saved model metadata: {result['metadata_path']}")

@@ -26,6 +26,13 @@ class StreamlitDashboardTests(unittest.TestCase):
             with self.subTest(fragment=fragment):
                 self.assertIn(fragment, source)
 
+    def test_streamlit_dashboard_loads_artifacts_without_training_on_launch(self):
+        source = APP_PATH.read_text(encoding="utf-8")
+
+        self.assertIn("load_prediction_artifact", source)
+        self.assertNotIn("train_and_save_best_model", source)
+        self.assertNotIn("train_candidate_models", source)
+
 
 if __name__ == "__main__":
     unittest.main()

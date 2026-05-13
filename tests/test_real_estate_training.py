@@ -2,6 +2,7 @@ import json
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 import joblib
 import numpy as np
@@ -131,6 +132,37 @@ class RealEstateTrainingTests(unittest.TestCase):
         self.assertEqual(metadata["random_state"], 42)
         self.assertIn("cities", metadata["ui_options"])
         self.assertIn("mae", metadata["metrics"][0])
+
+    def test_train_candidate_models_uses_tqdm_when_progress_is_enabled(self):
+        raw_df = build_training_fixture()
+        with tempfile.TemporaryDirectory() as tmpdir:
+            data_path = Path(tmpdir) / "fixture.csv"
+            raw_df.to_csv(data_path, index=False)
+            _, model_df, _ = prepare_modeling_data(data_path)
+
+            tqdm_calls = []
+
+            def fake_tqdm(iterable, **kwargs):
+                tqdm_calls.append(kwargs)
+                return iterable
+
+            with patch("src.training.tqdm", side_effect=fake_tqdm):
+                result = train_candidate_models(
+                    model_df,
+                    candidate_specs=[
+                        ("Baseline - DummyRegressor median", "dummy_median"),
+                        ("LinearRegression", "linear_regression"),
+                    ],
+                    test_size=0.25,
+                    random_state=42,
+                    show_progress=True,
+                )
+
+        self.assertEqual(len(tqdm_calls), 1)
+        self.assertEqual(tqdm_calls[0]["desc"], "Training model candidates")
+        self.assertEqual(tqdm_calls[0]["unit"], "model")
+        self.assertFalse(tqdm_calls[0]["disable"])
+        self.assertEqual(len(result["metrics_table"]), 2)
 
     def test_train_and_save_best_model_writes_prediction_artifact_and_metadata(self):
         raw_df = build_training_fixture()
