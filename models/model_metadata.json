@@ -23,13 +23,13 @@
     {
       "model": "ExtraTreesRegressor",
       "mae": 31150.92293784356,
-      "rmse": 58656.3815946122,
+      "rmse": 58656.38159461219,
       "r2": 0.8460077236985877,
       "rank_by_mae": 1
     },
     {
       "model": "RandomForestRegressor",
-      "mae": 32626.419365094265,
+      "mae": 32626.41936509426,
       "rmse": 60717.67270131121,
       "r2": 0.8349944184857805,
       "rank_by_mae": 2
@@ -864,6 +864,1039 @@
       "Živinarnik",
       "Гођевачка 36"
     ],
+    "regions_by_city": {
+      "Aleksinac": [
+        "Nepoznato"
+      ],
+      "Aranđelovac": [
+        "Knjaza Miloša",
+        "Zmaj Jovina"
+      ],
+      "Bajina Bašta": [
+        "Zaovine"
+      ],
+      "Banja Koviljača": [
+        "Marsala Tita",
+        "Maršala Tita 146",
+        "Maršla Tita",
+        "Nepoznato"
+      ],
+      "Banja Luka": [
+        "Sime Miljuša"
+      ],
+      "Bar": [
+        "Nepoznato"
+      ],
+      "Bačka Palanka": [
+        "Nepoznato",
+        "Svetozara Markovića"
+      ],
+      "Bački Jarak": [
+        "Nepoznato"
+      ],
+      "Bela Crkva": [
+        "Nepoznato",
+        "Save Munćana"
+      ],
+      "Beograd": [
+        "29. Novembra",
+        "Altina",
+        "Andrićev venac",
+        "Antifašističke borbe",
+        "Autokomanda",
+        "Avala",
+        "BULEVAR DESPOTA STEFANA",
+        "Bajlonijeva pijaca",
+        "Banija",
+        "Banjica",
+        "Banovo brdo",
+        "Barajevo",
+        "Batajnica",
+        "Bele vode",
+        "Beograd na vodi",
+        "Beograđanka ( centar )",
+        "Bežanija",
+        "Bežanijska kosa I",
+        "Bežanijska kosa II",
+        "Bežanijska kosa III",
+        "Bogoslovija",
+        "Boleč",
+        "Boljevci",
+        "Borča I",
+        "Borča II",
+        "Borča III",
+        "Botanička bašta",
+        "Branka Radičevića",
+        "Braće Jerković",
+        "Bulbuder",
+        "Bulevar Arsenija Čarnojevića",
+        "Bulevar Kr. Aleksandra",
+        "Bulevar Vojvode Mišića",
+        "Bulevar kralja Aleksandra",
+        "Bulevar maršala Tolbuhina",
+        "Cara Lazara",
+        "Centar",
+        "Centar (uži)",
+        "Cerak",
+        "Cerak vinogradi",
+        "Crveni krst",
+        "Cvetanova ćuprija",
+        "Cvetkova pijaca",
+        "Cvetni trg",
+        "Cvijićeva",
+        "DUNAVSKA",
+        "Dedinje (25. maj)",
+        "Dedinje (Beli dvor)",
+        "Dedinje (RTV Pink)",
+        "Deli Radivoja",
+        "Denkova bašta",
+        "Dobanovci",
+        "Donji Dorćol",
+        "Dragoslava Srejovića",
+        "Dunavski kej",
+        "Dušanovac",
+        "Farmaceutski fakultet",
+        "Filmski grad",
+        "Galenika",
+        "Golf naselje",
+        "Gornjačka",
+        "Gornji Dorćol",
+        "Gradska bolnica",
+        "Grocka (centar)",
+        "Gundulićev venac",
+        "HILANDARSKA",
+        "Hadžipopovac",
+        "Hala Pionir",
+        "Institut za majku i dete",
+        "Jajinci",
+        "Jakovo",
+        "Jove Ilića",
+        "Julino brdo",
+        "Jurija Gagarina",
+        "Južni bulevar",
+        "KNEZA MILOSA",
+        "Kalemegdan",
+        "Kalenić pijaca",
+        "Kaluđerica",
+        "Kanarevo brdo",
+        "Karaburma",
+        "Karađorđeva",
+        "Klinički centar",
+        "Kluz",
+        "Knez Mihailova ( centar )",
+        "Kneza Miloša ( centar )",
+        "Kneževac",
+        "Konjarnik",
+        "Kopitareva gradina",
+        "Kosančićev venac",
+        "Koste Jovanovića",
+        "Kotež",
+        "Košutnjak",
+        "Kralja Milutina",
+        "Kraljevi Čardaci",
+        "Krnjača",
+        "Kumodraž I",
+        "Kumodraž II",
+        "Labudovo brdo",
+        "Ledine",
+        "Lekino brdo",
+        "Leštane",
+        "Lion",
+        "Lipov lad",
+        "MIodraga Petrovića Čkalje",
+        "Mali mokri lug",
+        "Manjež",
+        "Medak padina",
+        "Medaković I",
+        "Medaković II",
+        "Medaković III",
+        "Miljakovac I",
+        "Miljakovac II",
+        "Miljakovac III",
+        "Mirijevo I",
+        "Mirijevo II",
+        "Mirijevo III",
+        "Mirijevo IV",
+        "Neimar",
+        "Nepoznato",
+        "Novi Beograd",
+        "Novi Beograd Blok 1 (Fontana)",
+        "Novi Beograd Blok 11 (Hotel Jugoslavija)",
+        "Novi Beograd Blok 11a (Opština NBG)",
+        "Novi Beograd Blok 11b",
+        "Novi Beograd Blok 11c (Stari Merkator)",
+        "Novi Beograd Blok 12 (YUBC)",
+        "Novi Beograd Blok 19 (Sava Centar)",
+        "Novi Beograd Blok 19a",
+        "Novi Beograd Blok 2",
+        "Novi Beograd Blok 21 (10. Gimnazija)",
+        "Novi Beograd Blok 22",
+        "Novi Beograd Blok 23",
+        "Novi Beograd Blok 24 (Super Vero)",
+        "Novi Beograd Blok 25 (Arena)",
+        "Novi Beograd Blok 28 (Potkovica)",
+        "Novi Beograd Blok 29",
+        "Novi Beograd Blok 3",
+        "Novi Beograd Blok 30 (B92)",
+        "Novi Beograd Blok 31 (Merkator)",
+        "Novi Beograd Blok 32 (Crkva sv. Dimitrija)",
+        "Novi Beograd Blok 33 (Genex kula)",
+        "Novi Beograd Blok 34 (Studentski grad)",
+        "Novi Beograd Blok 37",
+        "Novi Beograd Blok 38 (OŠ Ratko Mitrović)",
+        "Novi Beograd Blok 4 (Politehnička akademija)",
+        "Novi Beograd Blok 44 (Piramida)",
+        "Novi Beograd Blok 45 (TC Enjub)",
+        "Novi Beograd Blok 49",
+        "Novi Beograd Blok 5",
+        "Novi Beograd Blok 58",
+        "Novi Beograd Blok 60",
+        "Novi Beograd Blok 60 (Airport City)",
+        "Novi Beograd Blok 61",
+        "Novi Beograd Blok 62",
+        "Novi Beograd Blok 63",
+        "Novi Beograd Blok 64",
+        "Novi Beograd Blok 65",
+        "Novi Beograd Blok 66 (Tramvajska štala)",
+        "Novi Beograd Blok 67 (Belvil)",
+        "Novi Beograd Blok 67a",
+        "Novi Beograd Blok 68",
+        "Novi Beograd Blok 7 (Paviljoni)",
+        "Novi Beograd Blok 70 (Kineski TC)",
+        "Novi Beograd Blok 70a",
+        "Novi Beograd Blok 71",
+        "Novi Beograd Blok 72",
+        "Novi Beograd Blok 7a (Paviljoni)",
+        "Novi Beograd Blok 8 (Paviljoni)",
+        "Novi Beograd Blok 8a",
+        "Novi Beograd Blok 9",
+        "Novi Beograd Blok 9a (Dom Zdravlja)",
+        "Novo groblje",
+        "Obilićev venac",
+        "Olimp",
+        "Omladinskih Brigada",
+        "Omladinskih brigada",
+        "Ostružnica",
+        "Ovča",
+        "Padinska skela",
+        "Palata pravde",
+        "Palilula",
+        "Palilulska pijaca",
+        "Partizanov stadion",
+        "Pašino brdo",
+        "Petlovo brdo",
+        "Pirandelova",
+        "Plavi Horizonti",
+        "Politika ( centar )",
+        "Poštanska štedionica",
+        "Pregrevica",
+        "Profesorska kolonija",
+        "Radiofar",
+        "Rakovica",
+        "Resnik",
+        "Retenzija",
+        "Rospi ćuprija",
+        "Rudo",
+        "Rušanj",
+        "Sarajevska",
+        "Sava mala",
+        "Savski trg",
+        "Savski venac",
+        "Senjak",
+        "Severni bulevar",
+        "Skadarlija",
+        "Skojevsko naselje",
+        "Slavija",
+        "Slavujev venac",
+        "Sremčica",
+        "Stari Grad",
+        "Stepa Stepanović",
+        "Strahinjića Bana",
+        "Studentska",
+        "Studentski Trg ( centar )",
+        "Sunčana padina",
+        "Surčin (centar)",
+        "Svetog Dimitrija",
+        "TRG POLITIKA",
+        "Tašmajdan",
+        "Terazije",
+        "Terazije ( centar )",
+        "Topličin venac",
+        "Topčider",
+        "Tošin bunar",
+        "Trešnja",
+        "Trg Republike ( centar )",
+        "Trošarina",
+        "Učiteljsko naselje",
+        "Veliki mokri lug",
+        "Veljko Vlahović",
+        "Vidikovac",
+        "Vidikovačka padina",
+        "Vidikovački venac",
+        "Vinča",
+        "Višnjica",
+        "Višnjička banja",
+        "Vojvode Misica",
+        "Vojvode Mišića",
+        "Vojvode Vlahovića",
+        "Voždovac",
+        "Vračar (Centar)",
+        "Vračar (Hram)",
+        "Vukov spomenik",
+        "Zeleni venac",
+        "Zeleno Brdo",
+        "Zemun (13. maj)",
+        "Zemun (Bačka)",
+        "Zemun (Cara Dušana)",
+        "Zemun (Centar)",
+        "Zemun (Donji grad)",
+        "Zemun (Gardoš)",
+        "Zemun (Gornji grad)",
+        "Zemun (Kalvarija)",
+        "Zemun (Kej)",
+        "Zemun (Marije Bursać)",
+        "Zemun (Meandri)",
+        "Zemun (Nova Galenika)",
+        "Zemun (Novi Grad)",
+        "Zemun (Save Kovačevića)",
+        "Zemun (Sutjeska)",
+        "Zemun (Zemunske kapije)",
+        "Zemun (Ćukovac)",
+        "Zemun Polje",
+        "Zira",
+        "Zvezdara",
+        "Zvezdarska Šuma",
+        "Zvezdin stadion",
+        "Časlava Veljića",
+        "Čubura",
+        "Čukarica",
+        "Čukarička padina",
+        "Đačkog bataljona",
+        "Đeram pijaca",
+        "Šafarikova",
+        "Šumice",
+        "Žarkovo",
+        "Železnik"
+      ],
+      "Beočin": [
+        "Nepoznato"
+      ],
+      "Bečej": [
+        "Nepoznato"
+      ],
+      "Bečići": [
+        "Nepoznato"
+      ],
+      "Bor": [
+        "Centar",
+        "Mesna zajednica V"
+      ],
+      "Brzeće": [
+        "Nepoznato"
+      ],
+      "Bubanj": [
+        "Nepoznato"
+      ],
+      "Budva": [
+        "Dukley",
+        "Jadranski put",
+        "Mediteranska",
+        "Mediteranska ulica, centar",
+        "Nepoznato",
+        "Rozino"
+      ],
+      "Despotovac": [
+        "Nepoznato"
+      ],
+      "Divčibare": [
+        "Belog narcisa",
+        "Breza",
+        "Kneza Miloša",
+        "Krcmarska 14",
+        "Nepoznato",
+        "Poručnika Savičića i Radića",
+        "Гођевачка 36"
+      ],
+      "Dobrota": [
+        "Nepoznato"
+      ],
+      "Donja Lastva": [
+        "Nepoznato"
+      ],
+      "Donji Orahovac": [
+        "Nepoznato"
+      ],
+      "Futog": [
+        "Nepoznato"
+      ],
+      "GRČKA – SOLUN – CENTAR AGIOU DIMITRIOU 76 – 38 m² – 158.000 €": [
+        "Nepoznato"
+      ],
+      "Glifada": [
+        "Nepoznato"
+      ],
+      "Herceg Novi": [
+        "Nepoznato",
+        "Sarajevska",
+        "Topla"
+      ],
+      "Inđija": [
+        "Beška",
+        "Brunova",
+        "Cara Dušana",
+        "Centar",
+        "Dunavska",
+        "Nepoznato",
+        "Novosadska",
+        "Svetog Save",
+        "Trg slobode",
+        "Vojvode Stepe"
+      ],
+      "Irig": [
+        "Karađorđeva",
+        "Milice Stojadinović Srpkinje",
+        "Nepoznato"
+      ],
+      "Ivanjica": [
+        "Braće Rabrenović"
+      ],
+      "Jagodina": [
+        "Centar",
+        "Kajsijar",
+        "Levač",
+        "Nepoznato",
+        "Sarina međa",
+        "Tabane",
+        "Vašarište"
+      ],
+      "Jahorina": [
+        "Nepoznato"
+      ],
+      "Kikinda": [
+        "Dimitrija Tucovića"
+      ],
+      "Kopaonik": [
+        "Apartmani TRESKA",
+        "Arčibalda Rajsa",
+        "Bela reka",
+        "Bele reke",
+        "Duška Radovića",
+        "Jovana Cvijića",
+        "Karaman",
+        "Kod Uspinjače",
+        "Konaci",
+        "Kopaonik",
+        "MIODRAGA PETROVICA CKALJE",
+        "Mileve Marić Ajnštajn",
+        "Mramorska",
+        "Nepoznato",
+        "Novi Kopaonik",
+        "Patrijarha Pavla",
+        "Pavla Vuisića",
+        "Repu",
+        "Stefana Prvovencanog",
+        "Stefana Prvovencanog 33",
+        "Stefana Prvovenčanog",
+        "Stefana Prvovenčanog 170",
+        "Stefana Prvovenčanog 52",
+        "Stefana prvovencanog",
+        "Stevana Prvovenčanog",
+        "Treska",
+        "Vikend Naselje",
+        "Vikend naselje"
+      ],
+      "Kosjerić (varoš)": [
+        "Olge Grbić"
+      ],
+      "Kotor": [
+        "Nepoznato"
+      ],
+      "Kovin": [
+        "Cara Lazara",
+        "Cara Lazara 87C odskora Branislava Nušića 18",
+        "Nemanjina",
+        "nemanjina",
+        "svetozara markovića",
+        "vatrogasna"
+      ],
+      "Kragujevac": [
+        "Aerodrom",
+        "Bagremar",
+        "Bubanj",
+        "Centar",
+        "Centar preko Lepenice",
+        "Erdoglija",
+        "Grada Sirena",
+        "Kralja Milana IV",
+        "Mala vaga",
+        "Miodraga Vlajića Šuke",
+        "Nepoznato",
+        "Palilule",
+        "Pivara",
+        "Slobode",
+        "Stanovo",
+        "Vašarište",
+        "Zmaj Jovina",
+        "Čegarska"
+      ],
+      "Kraljevo": [
+        "Centar",
+        "TANASKA RAJICA"
+      ],
+      "Kruševac": [
+        "Bronks",
+        "Centar",
+        "Nepoznato",
+        "Pejton",
+        "Ujedinjene nacije"
+      ],
+      "Kula": [
+        "Nepoznato"
+      ],
+      "Kumbor": [
+        "Nepoznato",
+        "Portonovi"
+      ],
+      "Kuršumlija": [
+        "Nepoznato"
+      ],
+      "Lastva Grbaljska": [
+        "Nepoznato"
+      ],
+      "Leskovac": [
+        "Babicki Odred",
+        "Bulevar Oslobođenja",
+        "Centar",
+        "Dubočica",
+        "Nepoznato",
+        "Svetozara Krstića",
+        "Zmaj Jovina"
+      ],
+      "Ljubovija": [
+        "Nepoznato"
+      ],
+      "Loznica": [
+        "Banjski šor",
+        "Centar",
+        "Lagator"
+      ],
+      "Luštica": [
+        "Luštica bay",
+        "Luštica bay, Centrale",
+        "Nepoznato",
+        "Rose"
+      ],
+      "Mali Iđoš": [
+        "Nepoznato"
+      ],
+      "Mladenovac": [
+        "Centar"
+      ],
+      "Mladenovac (selo)": [
+        "Alekse Celebonovica"
+      ],
+      "Mrčevac": [
+        "Nepoznato"
+      ],
+      "Muo": [
+        "Nepoznato"
+      ],
+      "Nepoznato": [
+        "Nepoznato"
+      ],
+      "Niš": [
+        "Aleksandra Nenadovica",
+        "Apelovac",
+        "Beverli hils",
+        "Božidarčeva",
+        "Branka Krsmanovica",
+        "Branka Krsmanovića",
+        "Branko Bjegović",
+        "Bulevar Nemanjića",
+        "Bulevar zona",
+        "Cara Dusana",
+        "Centar",
+        "Crnogorska",
+        "Crvena Zvezda",
+        "Crveni Krst",
+        "Crveni pevac",
+        "Delijski vis",
+        "Durlan",
+        "Duvanište",
+        "Filipa Visnjica",
+        "Gabrovačka reka",
+        "Gornjomatejevacka",
+        "Ivana Milutinovića",
+        "Jagodin mala",
+        "Jovana Ristica",
+        "Kalač brdo",
+        "Kičevo",
+        "Knjazevacka",
+        "Komren",
+        "Kragujevačka",
+        "Marger",
+        "Mediana",
+        "Medijana",
+        "Negotinska",
+        "Nepoznato",
+        "Niška Banja",
+        "Nova železnička kolonija",
+        "Palilula",
+        "Palilulska",
+        "Pantelej",
+        "Pasi poljana",
+        "Proleterska",
+        "Ratko Jović",
+        "Stanoja Bunuševca",
+        "Staro groblje",
+        "Tehnički fakultet",
+        "Trošarina",
+        "Vardarska",
+        "Vojvode Tankosića",
+        "Vrežina",
+        "Ćele kula",
+        "Čair",
+        "Čalije",
+        "Ženeva (Devizno naselje)"
+      ],
+      "Nova Varoš": [
+        "Put Jovana Cvijica 20",
+        "Zebinovac"
+      ],
+      "Novi Bečej": [
+        "Nepoznato"
+      ],
+      "Novi Sad": [
+        "Adamovićevo naselje",
+        "Adice",
+        "Antuna Urbana",
+        "Avijatičarsko naselje",
+        "Banatić",
+        "Beogradski kej",
+        "Betanija",
+        "Bistrica",
+        "Branislava Bukurova",
+        "Bulevar",
+        "Bulevar Patrijarha Pavla",
+        "Bulevar oslobođenja",
+        "Cara Dušana",
+        "Centar",
+        "Dalmatinska",
+        "Detelinara",
+        "Detelinara nova",
+        "Filipa Višnjića",
+        "Fočanska1",
+        "Futog",
+        "Futoska",
+        "Futoška pijaca",
+        "Futoški put",
+        "Grbavica",
+        "Jablanova",
+        "Jelene Lozanić",
+        "Jodna banja",
+        "Jovana Mikića Spartak",
+        "Jugovićevo",
+        "Kamenjar",
+        "Karagača",
+        "Klisa",
+        "Kozačinskog",
+        "Liman 1",
+        "Liman 2",
+        "Liman 3",
+        "Liman 4",
+        "Lipov gaj",
+        "Milana Tepića",
+        "Miloja Čiplića",
+        "Mišeluk",
+        "Nepoznato",
+        "Novi Majur",
+        "Novo Naselje",
+        "Petrovaradin",
+        "Podbara",
+        "Radnička",
+        "Ribljja pijaca",
+        "Rotkvarija",
+        "Sajam",
+        "Sajlovo",
+        "Sajmište",
+        "Salajka",
+        "Satelit",
+        "Slana bara",
+        "Socijalno",
+        "Somborska",
+        "Somborski bulevar",
+        "Spens",
+        "Stari Majur",
+        "Stražilovska",
+        "Subotički bulevar",
+        "Svetogorska",
+        "Telep",
+        "Temerinski put",
+        "Tihomira Arsića",
+        "Trg mladenaca",
+        "Vase Ostojića",
+        "Veternik",
+        "Vidovdansko naselje",
+        "Ćirpanova",
+        "Šarengrad",
+        "Železnička stanica"
+      ],
+      "Novi Vinodolski": [
+        "Novi Vinodolski"
+      ],
+      "Obrenovac": [
+        "Centar",
+        "Dudovi",
+        "Rojkovac",
+        "Rvati",
+        "Stočnjak",
+        "Vojvode Mišića"
+      ],
+      "Pančevo": [
+        "Aksentija Maksimovića",
+        "Avalska",
+        "Bokokotorska",
+        "Branka Radičevića",
+        "Braće Jovanovića",
+        "Centar",
+        "Gornji grad Margita",
+        "Karaula",
+        "Karađorđeva",
+        "Kej Radoja Dakića",
+        "Kikindska",
+        "Kneza Mihajla Obrenovića",
+        "Kotež 1",
+        "Kotež 2",
+        "Kraljevića Marka",
+        "Maksima Gorkog",
+        "Mladost",
+        "Nepoznato",
+        "Nova misa",
+        "Nova misa vinogradi",
+        "Oslobođenja",
+        "Pere Segedinca",
+        "Radnička",
+        "Sodara",
+        "Strelište 1",
+        "Svetog Save",
+        "Svetozara Miletića",
+        "Svetozara Miletića 44",
+        "Tesla",
+        "Vojlovica",
+        "Vršačka",
+        "Zmaj Jove Jovanovića"
+      ],
+      "Paraćin": [
+        "Nepoznato"
+      ],
+      "Petrovac na Mlavi": [
+        "Nepoznato"
+      ],
+      "Petrovac na Moru": [
+        "Nepoznato",
+        "Nika Anđusa"
+      ],
+      "Petrovaradin": [
+        "Alibegovac",
+        "Blok 8",
+        "Blok 9",
+        "Blok vila",
+        "Fruškogorski put",
+        "Karlovački drum",
+        "Mišeluk",
+        "Nepoznato",
+        "Novi majur",
+        "Preradovićeva",
+        "Puckaroš",
+        "Sadovi",
+        "Stari majur",
+        "Stojana Vukosavljevića",
+        "Svetozara Miletića",
+        "Trandžament",
+        "Vojvode Putnika"
+      ],
+      "Podgorica": [
+        "18 jul",
+        "Nepoznato"
+      ],
+      "Popinci": [
+        "Maršala Tita"
+      ],
+      "Požarevac": [
+        "Centar",
+        "Nepoznato"
+      ],
+      "Prijepolje": [
+        "Bostani",
+        "Prijepolje (Centar)",
+        "Vakuf"
+      ],
+      "Prokuplje": [
+        "Nepoznato"
+      ],
+      "Pržno": [
+        "Nepoznato"
+      ],
+      "Radovići": [
+        "Nepoznato"
+      ],
+      "Raška": [
+        "KOPAONIK",
+        "Nepoznato",
+        "SREBRNA PLANINA",
+        "STEFANA PRVOVENCANOG",
+        "Stevana Prvovenčanog"
+      ],
+      "Ripanj": [
+        "Put za koloniju, Ripanj"
+      ],
+      "Ruma": [
+        "Centar",
+        "Kudoš",
+        "Nepoznato",
+        "Tivol",
+        "Širi centar"
+      ],
+      "Smederevo": [
+        "Centar"
+      ],
+      "Smederevska Palanka": [
+        "Sulejiceva",
+        "Ul.2o.jula 1d",
+        "Šulejićeva"
+      ],
+      "Sokobanja": [
+        "Centar",
+        "Ive Andića",
+        "Ive Andrića",
+        "Nemanjina 7",
+        "Nepoznato",
+        "Sportska",
+        "Sportska 39",
+        "Sportska 39A",
+        "Stevana Mokranjca"
+      ],
+      "Sombor": [
+        "Centar",
+        "Nepoznato",
+        "Nova Selenča",
+        "Venac"
+      ],
+      "Sopot": [
+        "Kosmaj"
+      ],
+      "Srbobran": [
+        "Svetog Save 1"
+      ],
+      "Sremska Kamenica": [
+        "Centar",
+        "Gornja Kamenica",
+        "Institut",
+        "Mišeluk",
+        "Nepoznato",
+        "Paragovo",
+        "Popovica",
+        "Tatarsko brdo",
+        "Čardak"
+      ],
+      "Sremska Mitrovica": [
+        "Nepoznato"
+      ],
+      "Sremski Karlovci": [
+        "Centar",
+        "Nepoznato"
+      ],
+      "Stara Pazova": [
+        "Centar",
+        "Golubinci",
+        "Nova Pazova",
+        "Novi Banovci",
+        "Stara Pazova",
+        "Stari Banovci"
+      ],
+      "Stari Bar": [
+        "Nepoznato"
+      ],
+      "Subotica": [
+        "Centar 1",
+        "Centar 3",
+        "Kertvaroš",
+        "Nepoznato",
+        "Prozivka",
+        "Radijalac"
+      ],
+      "Sutvara": [
+        "Nepoznato"
+      ],
+      "Sveti Stefan": [
+        "Nepoznato"
+      ],
+      "Tara (planina)": [
+        "Markovo polje"
+      ],
+      "Temerin": [
+        "Nepoznato",
+        "Novosadska"
+      ],
+      "Tivat": [
+        "Bucarska 17",
+        "Lustica Bay - Marina naselje",
+        "Luštica",
+        "Markuševina",
+        "Mažina",
+        "Nepoznato",
+        "Porto Montenegro"
+      ],
+      "Trebinje": [
+        "Nepoznato"
+      ],
+      "Trstenik": [
+        "Nepoznato"
+      ],
+      "Umka": [
+        "Zelengorska"
+      ],
+      "Užice": [
+        "Centar",
+        "Klisura",
+        "Marije Mate Magazinović",
+        "Vojvode Demira"
+      ],
+      "Valjevo": [
+        "Centar",
+        "Divcibare",
+        "Divčibare",
+        "Divčibarska",
+        "Godjevacka",
+        "Nepoznato"
+      ],
+      "Veliko Gradište": [
+        "Albanske spomenice",
+        "Nepoznato",
+        "Srebrno jezero"
+      ],
+      "Veternik": [
+        "Fešter",
+        "Milana Tepića",
+        "Nepoznato",
+        "Veternička rampa",
+        "Veterničko brdo"
+      ],
+      "Vranje": [
+        "Dr.Dimitrija Jovčića",
+        "Gavrila Principa",
+        "Ive Lole Ribara",
+        "Nepoznato",
+        "Todora Mišića Španca"
+      ],
+      "Vrbas": [
+        "Nepoznato"
+      ],
+      "Vrdnik": [
+        "Milice Stojadinovic 15",
+        "Milice Stojadinović",
+        "Nepoznato",
+        "Železnička"
+      ],
+      "Vrnjačka Banja": [
+        "Bore Vasiljevića",
+        "Borjak",
+        "Centar",
+        "Dubrava",
+        "Gočki put",
+        "Jezero",
+        "Kneza Miloša",
+        "Lipova",
+        "Moravska",
+        "Nepoznato",
+        "Olge Jovičić",
+        "Piskavac",
+        "Raj",
+        "Rsavci",
+        "Slatina",
+        "Snežnik",
+        "Sunčani breg",
+        "Zelengorska",
+        "Širi centar"
+      ],
+      "Vrčin": [
+        "Tranšpedova"
+      ],
+      "Vršac": [
+        "Žarka Zrenjanina"
+      ],
+      "Zaječar": [
+        "Centar",
+        "Popova plaža"
+      ],
+      "Zlatibor": [
+        "Andrije Jevremovića",
+        "Bele vode",
+        "Breza",
+        "Centar",
+        "Erska",
+        "Golija",
+        "Jelena Anžujska",
+        "Jovanke Jeftanović",
+        "Kamalj",
+        "Meteorološka",
+        "Miladina Pećinara",
+        "Nepoznato",
+        "Obudojevica",
+        "Palisad",
+        "Potoci",
+        "Rujanska",
+        "Senica",
+        "Sloboda",
+        "Sunčani Breg",
+        "Umina Voda",
+        "Užička",
+        "Viogorska",
+        "Vodice",
+        "Vranjevina",
+        "Vranjevina - Čolovića brdo",
+        "Zlatibor 1",
+        "Zova",
+        "Ćaldov put",
+        "Čajetina",
+        "Čigota",
+        "Čolovića brdo",
+        "Đurkovac"
+      ],
+      "Zrenjanin": [
+        "Centar",
+        "Nepoznato",
+        "Ruža Šulman",
+        "Žitni trg"
+      ],
+      "Ćuprija": [
+        "Nepoznato"
+      ],
+      "Čajetina": [
+        "Andrije Jevremovića",
+        "Braće Miladinov",
+        "Kiridžijska",
+        "Nepoznato",
+        "SUNCANI BREG"
+      ],
+      "Čačak": [
+        "Avenija",
+        "Centar"
+      ],
+      "Čelarevo": [
+        "Nepoznato"
+      ],
+      "Šabac": [
+        "Centar",
+        "Kralja Petra Prvog",
+        "Sindjelićeva 47",
+        "Živinarnik"
+      ],
+      "Šimanovci": [
+        "Mandic Sokak 7",
+        "Novo naselje"
+      ]
+    },
     "heating_types": [
       "Centralno",
       "Centralno, Etažno",

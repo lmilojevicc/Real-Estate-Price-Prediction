@@ -5,14 +5,16 @@ from __future__ import annotations
 from pathlib import Path
 import sys
 
+import matplotlib.pyplot as plt
 import pandas as pd
+import seaborn as sns
 import streamlit as st
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-from src.data_cleaning import create_cleaning_summary
+from src.data_cleaning import build_cleaned_dataset, create_cleaning_summary
 from src.prediction import (
     PropertyInputValidationError,
     estimate_price_range,
@@ -33,6 +35,7 @@ st.set_page_config(
     page_icon="🏠",
     layout="wide",
 )
+sns.set_theme(style="whitegrid")
 
 
 @st.cache_resource(show_spinner=False)
@@ -46,9 +49,10 @@ def cached_prediction_artifact():
 
 @st.cache_data(show_spinner=False)
 def cached_modeling_data():
-    """Load cleaned/model-ready data for dashboard charts."""
+    """Load the same raw, cleaned, and feature-engineered data used by analysis.ipynb."""
     raw_df, model_df, cleaning_summary = prepare_modeling_data(DEFAULT_DATA_PATH)
-    return raw_df, model_df, cleaning_summary
+    cleaned_df = build_cleaned_dataset(raw_df)
+    return raw_df, cleaned_df, model_df, cleaning_summary
 
 
 def format_eur(value: float) -> str:
@@ -73,6 +77,19 @@ def safe_options(metadata: dict, key: str, fallback: list[str]) -> list[str]:
     return fallback
 
 
+def region_options_for_city(metadata: dict, city: str) -> list[str]:
+    """Return only regions/opštine observed for the selected city."""
+    fallback = ["Nepoznato"]
+    ui_options = metadata.get("ui_options", {})
+    regions_by_city = ui_options.get("regions_by_city", {})
+    city_regions = regions_by_city.get(city, [])
+    if city_regions:
+        return city_regions
+    if regions_by_city:
+        return fallback
+    return safe_options(metadata, "regions", fallback)
+
+
 def render_prediction_tab(metadata: dict, pipeline) -> None:
     """Render the price prediction form and prediction output."""
     st.subheader("Procena cene")
@@ -81,15 +98,26 @@ def render_prediction_tab(metadata: dict, pipeline) -> None:
     )
 
     city_options = safe_options(metadata, "cities", ["Beograd", "Novi Sad", "Niš"])
-    region_options = safe_options(metadata, "regions", ["Centar", "Vračar", "Nepoznato"])
     heating_options = safe_options(metadata, "heating_types", ["Centralno", "Etažno", "Nepoznato"])
     parking_options = safe_options(metadata, "parking_options", ["Da", "Ne", "Nepoznato"])
+
+    location_col1, location_col2 = st.columns(2)
+    with location_col1:
+        city = st.selectbox("Grad", city_options, key="prediction_city")
+    region_options = region_options_for_city(metadata, city)
+    region_state_key = "prediction_region"
+    if st.session_state.get(region_state_key) not in region_options:
+        st.session_state[region_state_key] = region_options[0]
+    with location_col2:
+        region = st.selectbox(
+            "Region / opština",
+            region_options,
+            key=region_state_key,
+        )
 
     with st.form("prediction_form"):
         col1, col2, col3 = st.columns(3)
         with col1:
-            city = st.selectbox("Grad", city_options)
-            region = st.selectbox("Region / opština", region_options)
             area_m2 = st.number_input("Kvadratura (m²)", min_value=10.0, max_value=500.0, value=60.0, step=1.0)
             rooms = st.number_input("Broj soba", min_value=0.5, max_value=10.0, value=2.5, step=0.5)
         with col2:
@@ -147,35 +175,175 @@ def render_prediction_tab(metadata: dict, pipeline) -> None:
     )
 
 
+def render_matplotlib_figure(fig) -> None:
+    """Render a Matplotlib figure in Streamlit and close it afterwards."""
+    st.pyplot(fig, clear_figure=True)
+    plt.close(fig)
+
+
+def render_distribution_charts(raw_df: pd.DataFrame, cleaned_df: pd.DataFrame) -> None:
+    """Recreate the analysis notebook's before/after cleaning histograms."""
+    price_upper = raw_df["price_eur"].quantile(0.99)
+    area_upper = raw_df["area_m2"].quantile(0.99)
+
+    raw_price_plot = raw_df["price_eur"].dropna().clip(upper=price_upper) / 1000
+    cleaned_price_plot = cleaned_df["price_eur"].dropna().clip(upper=price_upper) / 1000
+    raw_area_plot = raw_df["area_m2"].dropna().clip(upper=area_upper)
+    cleaned_area_plot = cleaned_df["area_m2"].dropna().clip(upper=area_upper)
+
+    fig, axes = plt.subplots(2, 2, figsize=(14, 9))
+    sns.histplot(raw_price_plot, bins=45, color="tab:blue", ax=axes[0, 0])
+    axes[0, 0].set_title("Cena pre čišćenja")
+    axes[0, 0].set_xlabel("Cena (hiljade EUR)")
+    axes[0, 0].set_ylabel("Broj oglasa")
+
+    sns.histplot(cleaned_price_plot, bins=45, color="tab:green", ax=axes[0, 1])
+    axes[0, 1].set_title("Cena posle čišćenja")
+    axes[0, 1].set_xlabel("Cena (hiljade EUR)")
+    axes[0, 1].set_ylabel("Broj oglasa")
+
+    sns.histplot(raw_area_plot, bins=45, color="tab:blue", ax=axes[1, 0])
+    axes[1, 0].set_title("Kvadratura pre čišćenja")
+    axes[1, 0].set_xlabel("Kvadratura (m²)")
+    axes[1, 0].set_ylabel("Broj oglasa")
+
+    sns.histplot(cleaned_area_plot, bins=45, color="tab:green", ax=axes[1, 1])
+    axes[1, 1].set_title("Kvadratura posle čišćenja")
+    axes[1, 1].set_xlabel("Kvadratura (m²)")
+    axes[1, 1].set_ylabel("Broj oglasa")
+    fig.tight_layout()
+    render_matplotlib_figure(fig)
+
+
+def render_city_charts(raw_df: pd.DataFrame, cleaned_df: pd.DataFrame) -> None:
+    """Recreate the analysis notebook's city distribution charts and tables."""
+    fig, axes = plt.subplots(1, 2, figsize=(14, 5))
+    raw_df["city"].value_counts().head(10).plot(
+        kind="bar",
+        ax=axes[0],
+        color="tab:blue",
+    )
+    axes[0].set_title("Top 10 gradova - pre čišćenja")
+    axes[0].set_xlabel("Grad")
+    axes[0].set_ylabel("Broj oglasa")
+    axes[0].tick_params(axis="x", rotation=45)
+
+    cleaned_df["city"].value_counts().head(10).plot(
+        kind="bar",
+        ax=axes[1],
+        color="tab:green",
+    )
+    axes[1].set_title("Top 10 gradova - posle čišćenja")
+    axes[1].set_xlabel("Grad")
+    axes[1].set_ylabel("Broj oglasa")
+    axes[1].tick_params(axis="x", rotation=45)
+    fig.tight_layout()
+    render_matplotlib_figure(fig)
+
+    city_before_after = (
+        pd.DataFrame(
+            {
+                "Pre čišćenja": raw_df["city"].value_counts(),
+                "Posle čišćenja": cleaned_df["city"].value_counts(),
+            }
+        )
+        .fillna(0)
+        .astype(int)
+    )
+    city_before_after["uklonjeno"] = (
+        city_before_after["Pre čišćenja"] - city_before_after["Posle čišćenja"]
+    )
+    city_percentages = (
+        (cleaned_df["city"].value_counts(normalize=True) * 100)
+        .round(2)
+        .rename("Procenat (%)")
+        .to_frame()
+    )
+    city_percentages["Broj oglasa"] = cleaned_df["city"].value_counts()
+
+    table_col1, table_col2 = st.columns(2)
+    with table_col1:
+        st.caption("Gradovi: pre/posle čišćenja")
+        st.dataframe(
+            city_before_after.sort_values("Pre čišćenja", ascending=False).head(10),
+            width="stretch",
+        )
+    with table_col2:
+        st.caption("Udeo gradova u očišćenom skupu")
+        st.dataframe(city_percentages.head(15), width="stretch")
+
+
+def render_price_per_m2_charts(
+    cleaned_df: pd.DataFrame,
+    model_df: pd.DataFrame,
+) -> None:
+    """Recreate the analysis notebook's price-per-m2 and regional summaries."""
+    top_cleaned_cities = cleaned_df["city"].value_counts().head(8).index
+    price_per_m2_by_city = model_df[model_df["city"].isin(top_cleaned_cities)].copy()
+    price_per_m2_by_city["price_per_m2_plot"] = price_per_m2_by_city[
+        "price_per_m2"
+    ].clip(upper=price_per_m2_by_city["price_per_m2"].quantile(0.98))
+
+    fig, ax = plt.subplots(figsize=(12, 5))
+    sns.boxplot(data=price_per_m2_by_city, x="city", y="price_per_m2_plot", ax=ax)
+    ax.set_title("Cena po m² za najčešće gradove posle čišćenja")
+    ax.set_xlabel("Grad")
+    ax.set_ylabel("Cena po m² (EUR, ograničeno na 98. percentil)")
+    ax.tick_params(axis="x", rotation=35)
+    fig.tight_layout()
+    render_matplotlib_figure(fig)
+
+    region_price_summary = (
+        cleaned_df[cleaned_df["city"].isin(["Beograd", "Novi Sad"])]
+        .groupby(["city", "region"])["price_eur"]
+        .agg(
+            broj_oglasa="count",
+            p05=lambda series: series.quantile(0.05),
+            p25=lambda series: series.quantile(0.25),
+            medijan="median",
+            p75=lambda series: series.quantile(0.75),
+            p95=lambda series: series.quantile(0.95),
+        )
+        .query("broj_oglasa >= 30")
+        .sort_values(["city", "medijan"], ascending=[True, False])
+        .round(0)
+        .reset_index()
+    )
+    st.caption("Vodeći regioni po medijani cene za Beograd i Novi Sad")
+    st.dataframe(
+        region_price_summary.groupby("city").head(10),
+        width="stretch",
+    )
+
+
 def render_data_tab() -> None:
-    """Render cleaned dataset context and exploratory charts."""
+    """Render EDA charts recreated from notebooks/analysis.ipynb."""
     st.subheader("Podaci")
+    st.write(
+        "Grafici su rekreirani iz `notebooks/analysis.ipynb` nad istim raw, očišćenim i feature-engineered skupovima."
+    )
     with st.spinner("Učitavanje i priprema podataka..."):
-        raw_df, model_df, cleaning_summary = cached_modeling_data()
+        raw_df, cleaned_df, model_df, cleaning_summary = cached_modeling_data()
 
     col1, col2, col3 = st.columns(3)
     col1.metric("Raw oglasi", f"{len(raw_df):,}".replace(",", "."))
-    col2.metric("Model-ready oglasi", f"{len(model_df):,}".replace(",", "."))
+    col2.metric("Očišćeni oglasi", f"{len(cleaned_df):,}".replace(",", "."))
     col3.metric("Uklonjeno", f"{cleaning_summary['rows_removed_total']:,}".replace(",", "."))
 
-    st.write("Sažetak čišćenja podataka")
-    st.dataframe(pd.DataFrame([cleaning_summary]).T.rename(columns={0: "vrednost"}), use_container_width=True)
+    with st.expander("Sažetak čišćenja podataka", expanded=False):
+        st.dataframe(
+            pd.DataFrame([cleaning_summary]).T.rename(columns={0: "vrednost"}),
+            width="stretch",
+        )
 
-    chart_col1, chart_col2 = st.columns(2)
-    with chart_col1:
-        st.write("Top gradovi")
-        st.bar_chart(model_df["city"].value_counts().head(15))
-    with chart_col2:
-        st.write("Top regioni")
-        st.bar_chart(model_df["region"].value_counts().head(15))
+    st.markdown("### Distribucije pre i posle čišćenja")
+    render_distribution_charts(raw_df, cleaned_df)
 
-    dist_col1, dist_col2 = st.columns(2)
-    with dist_col1:
-        st.write("Raspodela cena")
-        st.bar_chart(model_df["price_eur"].dropna() / 1000)
-    with dist_col2:
-        st.write("Raspodela kvadrature")
-        st.bar_chart(model_df["area_m2"].dropna())
+    st.markdown("### Kategoričke raspodele i zastupljenost gradova")
+    render_city_charts(raw_df, cleaned_df)
+
+    st.markdown("### Cena po kvadratu i regionalni obrasci")
+    render_price_per_m2_charts(cleaned_df, model_df)
 
 
 def render_models_tab(metadata: dict) -> None:
@@ -193,7 +361,7 @@ def render_models_tab(metadata: dict) -> None:
     best_model_name = metadata.get("best_model_name", metrics_df.iloc[0]["model"])
 
     st.metric("Najbolji model prema MAE", best_model_name)
-    st.dataframe(metrics_df.round(3), use_container_width=True)
+    st.dataframe(metrics_df.round(3), width="stretch")
 
     chart_col1, chart_col2, chart_col3 = st.columns(3)
     with chart_col1:
@@ -245,10 +413,63 @@ def render_project_tab(metadata: dict) -> None:
         )
 
 
+def render_header() -> None:
+    """Render the dashboard hero/header."""
+    st.markdown(
+        """
+        <style>
+        .dashboard-hero {
+            padding: 1.25rem 1.5rem;
+            margin-bottom: 1rem;
+            border: 1px solid rgba(148, 163, 184, 0.25);
+            border-radius: 1rem;
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.12), rgba(16, 185, 129, 0.10));
+        }
+        .dashboard-hero h1 {
+            margin: 0;
+            font-size: 2.1rem;
+            line-height: 1.2;
+        }
+        .dashboard-hero p {
+            margin: 0.35rem 0 0 0;
+            color: rgb(100, 116, 139);
+            font-size: 1.02rem;
+        }
+        div[data-testid="stSegmentedControl"] {
+            margin-bottom: 1rem;
+        }
+        </style>
+        <div class="dashboard-hero">
+            <h1>🏠 Procena cena nekretnina</h1>
+            <p>CS490 dashboard za predikciju cena nekretnina u Srbiji.</p>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+
+def render_section_navigation() -> str:
+    """Render tab-like navigation without eagerly rendering every section."""
+    section_labels = {
+        "Procena cene": "🏠 Procena cene",
+        "Podaci": "📊 Podaci",
+        "Modeli": "🤖 Modeli",
+        "O projektu": "ℹ️ O projektu",
+    }
+    section = st.segmented_control(
+        "Sekcija",
+        options=list(section_labels),
+        default="Procena cene",
+        format_func=lambda option: section_labels[option],
+        label_visibility="collapsed",
+        width="stretch",
+    )
+    return section or "Procena cene"
+
+
 def main() -> None:
     """Render the Streamlit dashboard."""
-    st.title("Procena cena nekretnina")
-    st.write("CS490 dashboard za predikciju cena nekretnina u Srbiji.")
+    render_header()
 
     try:
         pipeline, metadata = cached_prediction_artifact()
@@ -257,17 +478,15 @@ def main() -> None:
         st.code("uv run python -m src.training", language="bash")
         st.stop()
 
-    prediction_tab, data_tab, models_tab, project_tab = st.tabs(
-        ["Procena cene", "Podaci", "Modeli", "O projektu"]
-    )
+    section = render_section_navigation()
 
-    with prediction_tab:
+    if section == "Procena cene":
         render_prediction_tab(metadata, pipeline)
-    with data_tab:
+    elif section == "Podaci":
         render_data_tab()
-    with models_tab:
+    elif section == "Modeli":
         render_models_tab(metadata)
-    with project_tab:
+    else:
         render_project_tab(metadata)
 
 

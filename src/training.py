@@ -61,9 +61,14 @@ def _portable_project_path(path: str | Path) -> str:
 
 def collect_ui_options(model_df: pd.DataFrame) -> dict[str, Any]:
     """Collect category choices and numeric ranges for Streamlit controls."""
+    regions_by_city = {
+        str(city): _category_options(city_df["region"])
+        for city, city_df in model_df.dropna(subset=["city"]).groupby("city", sort=True)
+    }
     options: dict[str, Any] = {
         "cities": _category_options(model_df["city"]),
         "regions": _category_options(model_df["region"]),
+        "regions_by_city": regions_by_city,
         "heating_types": _category_options(model_df["heating_type"]),
         "parking_options": _category_options(model_df["parking"]),
     }

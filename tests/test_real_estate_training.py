@@ -79,6 +79,9 @@ class RealEstateTrainingTests(unittest.TestCase):
         self.assertIn("Novi Sad", options["cities"])
         self.assertIn("Centralno", options["heating_types"])
         self.assertIn("Da", options["parking_options"])
+        self.assertIn("Vracar", options["regions_by_city"]["Beograd"])
+        self.assertNotIn("Grbavica", options["regions_by_city"]["Beograd"])
+        self.assertIn("Grbavica", options["regions_by_city"]["Novi Sad"])
 
     def test_prepare_modeling_data_returns_raw_model_frame_and_cleaning_summary(self):
         raw_df = build_training_fixture()
