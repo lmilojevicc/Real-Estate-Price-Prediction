@@ -14,11 +14,12 @@ from src.prediction import (
     build_prediction_frame,
     build_raw_floor_string,
     estimate_price_range,
+    load_model_registry,
     load_prediction_artifact,
     predict_price,
     validate_property_input,
 )
-from src.training import MODEL_ARTIFACT_NAME, MODEL_METADATA_NAME
+from src.training import MODEL_ARTIFACT_NAME, MODEL_METADATA_NAME, MODEL_REGISTRY_ARTIFACT_NAME
 
 
 VALID_PROPERTY_INPUT = {
@@ -170,6 +171,27 @@ class RealEstatePredictionTests(unittest.TestCase):
             prediction = predict_price(loaded_pipeline, VALID_PROPERTY_INPUT)
             self.assertEqual(loaded_metadata["best_model_name"], "LinearRegression")
             self.assertGreater(prediction, 0.0)
+
+    def test_load_model_registry_reads_saved_pipelines_and_falls_back_to_best(self):
+        pipeline = fit_small_prediction_pipeline()
+        with tempfile.TemporaryDirectory() as tmpdir:
+            models_dir = Path(tmpdir)
+            registry_path = models_dir / MODEL_REGISTRY_ARTIFACT_NAME
+            joblib.dump({"pipelines": {"LinearRegression": pipeline}}, registry_path)
+
+            registry = load_model_registry(
+                default_pipeline=None,
+                metadata={"model_registry_path": str(registry_path)},
+            )
+            fallback_registry = load_model_registry(
+                default_pipeline=pipeline,
+                metadata={"best_model_name": "LinearRegression"},
+                registry_path=models_dir / "missing.joblib",
+            )
+
+        self.assertIn("LinearRegression", registry)
+        self.assertIn("LinearRegression", fallback_registry)
+        self.assertGreater(predict_price(registry["LinearRegression"], VALID_PROPERTY_INPUT), 0.0)
 
     def test_load_prediction_artifact_raises_clear_error_when_artifact_missing(self):
         with tempfile.TemporaryDirectory() as tmpdir:

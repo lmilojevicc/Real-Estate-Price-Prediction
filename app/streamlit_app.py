@@ -14,10 +14,11 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-from src.data_cleaning import build_cleaned_dataset, create_cleaning_summary
+from src.data_cleaning import build_cleaned_dataset
 from src.prediction import (
     PropertyInputValidationError,
     estimate_price_range,
+    load_model_registry,
     load_prediction_artifact,
     predict_price,
 )
@@ -40,11 +41,13 @@ sns.set_theme(style="whitegrid")
 
 @st.cache_resource(show_spinner=False)
 def cached_prediction_artifact():
-    """Load saved model artifact once per Streamlit session."""
-    return load_prediction_artifact(
+    """Load saved model artifacts once per Streamlit session."""
+    best_pipeline, metadata = load_prediction_artifact(
         artifact_path=DEFAULT_MODELS_DIR / MODEL_ARTIFACT_NAME,
         metadata_path=DEFAULT_MODELS_DIR / MODEL_METADATA_NAME,
     )
+    model_registry = load_model_registry(best_pipeline, metadata)
+    return best_pipeline, metadata, model_registry
 
 
 @st.cache_data(show_spinner=False)
@@ -60,14 +63,14 @@ def format_eur(value: float) -> str:
     return f"{value:,.0f} EUR".replace(",", ".")
 
 
-def get_best_model_mae(metadata: dict) -> float | None:
-    """Read best-model MAE from saved model metadata."""
-    best_model_name = metadata.get("best_model_name")
+def get_model_mae(metadata: dict, model_name: str | None) -> float | None:
+    """Read a model's MAE from saved model metadata."""
+    if not model_name:
+        return None
     for row in metadata.get("metrics", []):
-        if row.get("model") == best_model_name:
+        if row.get("model") == model_name:
             return float(row["mae"])
     return None
-
 
 def safe_options(metadata: dict, key: str, fallback: list[str]) -> list[str]:
     """Return non-empty option lists for Streamlit widgets."""
@@ -90,12 +93,46 @@ def region_options_for_city(metadata: dict, city: str) -> list[str]:
     return safe_options(metadata, "regions", fallback)
 
 
-def render_prediction_tab(metadata: dict, pipeline) -> None:
+def ordered_model_names(metadata: dict, model_registry: dict) -> list[str]:
+    """Return saved model names ordered by evaluation rank when available."""
+    metric_names = [row["model"] for row in metadata.get("metrics", [])]
+    ordered_names = [name for name in metric_names if name in model_registry]
+    ordered_names.extend(name for name in model_registry if name not in ordered_names)
+    return ordered_names
+
+
+def model_option_label(metadata: dict, model_name: str) -> str:
+    """Format model switcher options with best-model marker."""
+    if model_name == metadata.get("best_model_name"):
+        return f"{model_name} (najbolji)"
+    return model_name
+
+
+def render_prediction_tab(metadata: dict, model_registry: dict) -> None:
     """Render the price prediction form and prediction output."""
     st.subheader("Procena cene")
     st.write(
         "Unesite karakteristike nekretnine. Model vraća procenu oglašene cene u evrima."
     )
+
+    model_names = ordered_model_names(metadata, model_registry)
+    best_model_name = metadata.get("best_model_name")
+    default_model_name = best_model_name if best_model_name in model_names else model_names[0]
+    selected_model_name = st.selectbox(
+        "Model za procenu",
+        options=model_names,
+        index=model_names.index(default_model_name),
+        format_func=lambda model_name: model_option_label(metadata, model_name),
+        width="stretch",
+    )
+    selected_model_name = selected_model_name or model_names[0]
+    selected_pipeline = model_registry[selected_model_name]
+    selected_mae = get_model_mae(metadata, selected_model_name)
+    if len(model_registry) == 1:
+        st.caption(
+            "Dostupan je samo trenutno sačuvani model. Pokrenite `uv run python -m src.training` "
+            "da generišete registry za prebacivanje između svih modela."
+        )
 
     city_options = safe_options(metadata, "cities", ["Beograd", "Novi Sad", "Niš"])
     heating_options = safe_options(metadata, "heating_types", ["Centralno", "Etažno", "Nepoznato"])
@@ -156,19 +193,19 @@ def render_prediction_tab(metadata: dict, pipeline) -> None:
     }
 
     try:
-        predicted_price = predict_price(pipeline, property_input)
+        predicted_price = predict_price(selected_pipeline, property_input)
     except PropertyInputValidationError as exc:
         st.error(f"Nevalidan unos: {exc}")
         return
 
-    mae = get_best_model_mae(metadata)
-    estimated_range = estimate_price_range(predicted_price, mae)
+    estimated_range = estimate_price_range(predicted_price, selected_mae)
 
     st.metric("Procenjena cena", format_eur(predicted_price))
+    st.caption(f"Korišćeni model: {selected_model_name}")
     if estimated_range is not None:
         lower, upper = estimated_range
         st.caption(
-            f"Okvirni raspon na osnovu MAE metrike najboljeg modela: {format_eur(lower)} - {format_eur(upper)}"
+            f"Okvirni raspon na osnovu MAE metrike izabranog modela: {format_eur(lower)} - {format_eur(upper)}"
         )
     st.caption(
         "Procena je orijentaciona i zavisi od kvaliteta podataka, lokacije i karakteristika koje postoje u datasetu."
@@ -472,7 +509,7 @@ def main() -> None:
     render_header()
 
     try:
-        pipeline, metadata = cached_prediction_artifact()
+        _best_pipeline, metadata, model_registry = cached_prediction_artifact()
     except FileNotFoundError as exc:
         st.error(str(exc))
         st.code("uv run python -m src.training", language="bash")
@@ -481,7 +518,7 @@ def main() -> None:
     section = render_section_navigation()
 
     if section == "Procena cene":
-        render_prediction_tab(metadata, pipeline)
+        render_prediction_tab(metadata, model_registry)
     elif section == "Podaci":
         render_data_tab()
     elif section == "Modeli":

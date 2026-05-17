@@ -12,7 +12,13 @@ import pandas as pd
 
 from src.features import add_model_features
 from src.model_pipeline import get_model_feature_columns
-from src.training import DEFAULT_MODELS_DIR, MODEL_ARTIFACT_NAME, MODEL_METADATA_NAME
+from src.training import (
+    DEFAULT_MODELS_DIR,
+    MODEL_ARTIFACT_NAME,
+    MODEL_METADATA_NAME,
+    MODEL_REGISTRY_ARTIFACT_NAME,
+    PROJECT_ROOT,
+)
 
 
 class PropertyInputValidationError(ValueError):
@@ -167,11 +173,19 @@ def build_prediction_frame(
     return frame
 
 
+def _project_path(path: str | Path) -> Path:
+    """Resolve repository-relative metadata paths."""
+    resolved = Path(path)
+    if resolved.is_absolute():
+        return resolved
+    return PROJECT_ROOT / resolved
+
+
 def load_prediction_artifact(
     artifact_path: str | Path | None = None,
     metadata_path: str | Path | None = None,
 ):
-    """Load the persisted sklearn pipeline and metadata for prediction."""
+    """Load the persisted best sklearn pipeline and metadata for prediction."""
     artifact = Path(artifact_path) if artifact_path is not None else DEFAULT_MODELS_DIR / MODEL_ARTIFACT_NAME
     metadata_file = Path(metadata_path) if metadata_path is not None else DEFAULT_MODELS_DIR / MODEL_METADATA_NAME
 
@@ -185,6 +199,32 @@ def load_prediction_artifact(
     if metadata_file.exists():
         metadata = json.loads(metadata_file.read_text(encoding="utf-8"))
     return pipeline, metadata
+
+
+def load_model_registry(
+    default_pipeline,
+    metadata: dict[str, Any] | None = None,
+    registry_path: str | Path | None = None,
+) -> dict[str, Any]:
+    """Load all saved model pipelines, falling back to the best pipeline."""
+    metadata = metadata or {}
+    registry_file = None
+    if registry_path is not None:
+        registry_file = Path(registry_path)
+    elif metadata.get("model_registry_path"):
+        registry_file = _project_path(metadata["model_registry_path"])
+    else:
+        registry_file = DEFAULT_MODELS_DIR / MODEL_REGISTRY_ARTIFACT_NAME
+
+    if registry_file.exists():
+        registry = joblib.load(registry_file)
+        if isinstance(registry, dict) and "pipelines" in registry:
+            return registry["pipelines"]
+        if isinstance(registry, dict):
+            return registry
+
+    model_name = metadata.get("best_model_name", "Sačuvani model")
+    return {model_name: default_pipeline}
 
 
 def predict_price(

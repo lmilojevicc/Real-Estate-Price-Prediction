@@ -19,11 +19,41 @@
     "heating_type",
     "parking"
   ],
+  "available_models": [
+    {
+      "model": "Baseline - DummyRegressor median",
+      "model_key": "dummy_median"
+    },
+    {
+      "model": "LinearRegression",
+      "model_key": "linear_regression"
+    },
+    {
+      "model": "RidgeRegression",
+      "model_key": "ridge_regression"
+    },
+    {
+      "model": "RandomForestRegressor",
+      "model_key": "random_forest"
+    },
+    {
+      "model": "ExtraTreesRegressor",
+      "model_key": "extra_trees"
+    },
+    {
+      "model": "GradientBoostingRegressor",
+      "model_key": "gradient_boosting"
+    },
+    {
+      "model": "HistGradientBoostingRegressor",
+      "model_key": "hist_gradient_boosting"
+    }
+  ],
   "metrics": [
     {
       "model": "ExtraTreesRegressor",
-      "mae": 31150.92293784356,
-      "rmse": 58656.38159461219,
+      "mae": 31150.922937843563,
+      "rmse": 58656.3815946122,
       "r2": 0.8460077236985877,
       "rank_by_mae": 1
     },
@@ -2034,5 +2064,6 @@
     "deduped_rows": 19725,
     "cleaned_rows": 18651,
     "rows_removed_total": 1933
-  }
+  },
+  "model_registry_path": "models/real_estate_model_registry.joblib"
 }

@@ -20,6 +20,7 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_DATA_PATH = PROJECT_ROOT / "data" / "nekretnine_raw.csv"
 DEFAULT_MODELS_DIR = PROJECT_ROOT / "models"
 MODEL_ARTIFACT_NAME = "real_estate_price_pipeline.joblib"
+MODEL_REGISTRY_ARTIFACT_NAME = "real_estate_model_registry.joblib"
 MODEL_METADATA_NAME = "model_metadata.json"
 
 DEFAULT_MODEL_CANDIDATES: list[tuple[str, str]] = [
@@ -160,6 +161,7 @@ def build_model_metadata(
     data_path: str | Path,
     random_state: int,
     test_size: float,
+    registry_path: Path | None = None,
 ) -> dict[str, Any]:
     """Build JSON-serializable metadata for the saved model artifact."""
     metrics = training_result["metrics_table"].to_dict(orient="records")
@@ -167,13 +169,21 @@ def build_model_metadata(
         {key: _json_safe_number(value) for key, value in row.items()}
         for row in metrics
     ]
+    available_models = [
+        {
+            "model": display_name,
+            "model_key": model_info["model_key"],
+        }
+        for display_name, model_info in training_result["fitted_models"].items()
+    ]
 
-    return {
+    metadata = {
         "best_model_name": training_result["best_model_name"],
         "best_model_key": training_result["best_model_key"],
         "artifact_path": _portable_project_path(artifact_path),
         "data_path": _portable_project_path(data_path),
         "feature_columns": training_result["feature_columns"],
+        "available_models": available_models,
         "metrics": metrics,
         "raw_rows": int(cleaning_summary["raw_rows"]),
         "cleaned_rows": int(len(model_df)),
@@ -186,6 +196,9 @@ def build_model_metadata(
             key: _json_safe_number(value) for key, value in cleaning_summary.items()
         },
     }
+    if registry_path is not None:
+        metadata["model_registry_path"] = _portable_project_path(registry_path)
+    return metadata
 
 
 def train_and_save_best_model(
@@ -215,8 +228,23 @@ def train_and_save_best_model(
     )
 
     artifact_path = models_dir / MODEL_ARTIFACT_NAME
+    registry_path = models_dir / MODEL_REGISTRY_ARTIFACT_NAME
     metadata_path = models_dir / MODEL_METADATA_NAME
     joblib.dump(training_result["best_pipeline"], artifact_path, compress=3)
+
+    model_registry = {
+        "pipelines": {
+            display_name: model_info["pipeline"]
+            for display_name, model_info in training_result["fitted_models"].items()
+        },
+        "model_keys": {
+            display_name: model_info["model_key"]
+            for display_name, model_info in training_result["fitted_models"].items()
+        },
+        "best_model_name": training_result["best_model_name"],
+        "best_model_key": training_result["best_model_key"],
+    }
+    joblib.dump(model_registry, registry_path, compress=3)
 
     metadata = build_model_metadata(
         training_result=training_result,
@@ -226,6 +254,7 @@ def train_and_save_best_model(
         data_path=data_path,
         random_state=random_state,
         test_size=test_size,
+        registry_path=registry_path,
     )
     metadata_path.write_text(
         json.dumps(metadata, ensure_ascii=False, indent=2),
@@ -235,6 +264,7 @@ def train_and_save_best_model(
     return {
         "artifact_path": str(artifact_path),
         "metadata_path": str(metadata_path),
+        "model_registry_path": str(registry_path),
         "metadata": metadata,
         "metrics_table": training_result["metrics_table"],
         "best_pipeline": training_result["best_pipeline"],

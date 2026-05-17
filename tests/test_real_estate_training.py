@@ -13,6 +13,7 @@ from src.training import (
     DEFAULT_MODEL_CANDIDATES,
     MODEL_ARTIFACT_NAME,
     MODEL_METADATA_NAME,
+    MODEL_REGISTRY_ARTIFACT_NAME,
     build_model_metadata,
     collect_ui_options,
     prepare_modeling_data,
@@ -128,6 +129,7 @@ class RealEstateTrainingTests(unittest.TestCase):
 
         self.assertEqual(metadata["feature_columns"], training_result["feature_columns"])
         self.assertEqual(len(metadata["metrics"]), 2)
+        self.assertEqual(len(metadata["available_models"]), 2)
         self.assertIn(metadata["best_model_key"], {"dummy_median", "linear_regression"})
         self.assertEqual(metadata["raw_rows"], len(raw_df))
         self.assertEqual(metadata["cleaned_rows"], len(model_df))
@@ -187,14 +189,21 @@ class RealEstateTrainingTests(unittest.TestCase):
             )
 
             artifact_path = models_dir / MODEL_ARTIFACT_NAME
+            registry_path = models_dir / MODEL_REGISTRY_ARTIFACT_NAME
             metadata_path = models_dir / MODEL_METADATA_NAME
             metadata = json.loads(metadata_path.read_text(encoding="utf-8"))
             pipeline = joblib.load(artifact_path)
+            registry = joblib.load(registry_path)
 
             self.assertTrue(artifact_path.exists())
+            self.assertTrue(registry_path.exists())
             self.assertTrue(metadata_path.exists())
             self.assertEqual(result["artifact_path"], str(artifact_path))
+            self.assertEqual(result["model_registry_path"], str(registry_path))
+            self.assertEqual(metadata["model_registry_path"], str(registry_path.resolve()))
             self.assertEqual(len(metadata["metrics"]), 3)
+            self.assertEqual(len(metadata["available_models"]), 3)
+            self.assertEqual(len(registry["pipelines"]), 3)
             self.assertIn(metadata["best_model_key"], {"linear_regression", "random_forest", "gradient_boosting"})
             self.assertGreater(metadata["cleaned_rows"], 0)
             self.assertIn("cities", metadata["ui_options"])
