@@ -12,3 +12,6 @@ wheels/
 *.log
 
 activity/
+
+# Trained/generated model artifacts
+models/
