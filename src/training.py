@@ -29,8 +29,12 @@ DEFAULT_MODEL_CANDIDATES: list[tuple[str, str]] = [
     ("RidgeRegression", "ridge_regression"),
     ("RandomForestRegressor", "random_forest"),
     ("ExtraTreesRegressor", "extra_trees"),
+    ("ExtraTreesRegressor log target", "extra_trees_log_target"),
     ("GradientBoostingRegressor", "gradient_boosting"),
     ("HistGradientBoostingRegressor", "hist_gradient_boosting"),
+    ("HistGradientBoostingRegressor log target", "hist_gradient_boosting_log_target"),
+    ("CatBoostRegressor", "catboost"),
+    ("CatBoostRegressor log target", "catboost_log_target"),
 ]
 
 

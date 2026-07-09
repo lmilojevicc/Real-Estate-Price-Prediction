@@ -19,13 +19,13 @@ class ModelTrainingPipelineTests(unittest.TestCase):
     def test_preprocessor_imputes_missing_values_and_handles_unseen_categories(self):
         train = pd.DataFrame(
             [
-                {"area_m2": 50.0, "rooms": 2.0, "floor": 1.0, "total_floors": 5.0, "is_last_floor": 0.0, "year_built": 2010.0, "building_age": 16.0, "is_lux": 0, "is_penthouse": 0, "is_duplex": 0, "city": "Beograd", "region": "Vracar", "heating_type": "Centralno", "parking": "Da"},
-                {"area_m2": 70.0, "rooms": np.nan, "floor": np.nan, "total_floors": np.nan, "is_last_floor": np.nan, "year_built": np.nan, "building_age": np.nan, "is_lux": 1, "is_penthouse": 0, "is_duplex": 0, "city": "Novi Sad", "region": "Grbavica", "heating_type": None, "parking": "Ne"},
+                {"area_m2": 50.0, "rooms": 2.0, "floor": 1.0, "total_floors": 5.0, "is_last_floor": 0.0, "year_built": 2010.0, "building_age": 16.0, "is_lux": 0, "is_penthouse": 0, "is_duplex": 0, "city": "Beograd", "region": "Vracar", "city_region": "Beograd | Vracar", "heating_type": "Centralno", "parking": "Da"},
+                {"area_m2": 70.0, "rooms": np.nan, "floor": np.nan, "total_floors": np.nan, "is_last_floor": np.nan, "year_built": np.nan, "building_age": np.nan, "is_lux": 1, "is_penthouse": 0, "is_duplex": 0, "city": "Novi Sad", "region": "Grbavica", "city_region": "Novi Sad | Grbavica", "heating_type": None, "parking": "Ne"},
             ]
         )
         test = pd.DataFrame(
             [
-                {"area_m2": 65.0, "rooms": 2.5, "floor": 3.0, "total_floors": 6.0, "is_last_floor": 0.0, "year_built": 2015.0, "building_age": 11.0, "is_lux": 0, "is_penthouse": 1, "is_duplex": 0, "city": "Kragujevac", "region": "Centar", "heating_type": "Gas", "parking": "Nepoznato"}
+                {"area_m2": 65.0, "rooms": 2.5, "floor": 3.0, "total_floors": 6.0, "is_last_floor": 0.0, "year_built": 2015.0, "building_age": 11.0, "is_lux": 0, "is_penthouse": 1, "is_duplex": 0, "city": "Kragujevac", "region": "Centar", "city_region": "Kragujevac | Centar", "heating_type": "Gas", "parking": "Nepoznato"}
             ]
         )
 
@@ -72,6 +72,17 @@ class ModelTrainingPipelineTests(unittest.TestCase):
             with self.subTest(model_key=model_key):
                 pipeline = build_model_pipeline(model_key)
                 self.assertIsInstance(pipeline, Pipeline)
+
+    def test_build_model_pipeline_supports_accuracy_improvement_regressors(self):
+        for model_key in [
+            "extra_trees_log_target",
+            "hist_gradient_boosting_log_target",
+            "catboost",
+            "catboost_log_target",
+        ]:
+            with self.subTest(model_key=model_key):
+                model = build_model_pipeline(model_key)
+                self.assertIsNotNone(model)
 
     def test_build_model_pipeline_rejects_unknown_model_name(self):
         with self.assertRaisesRegex(ValueError, "Unknown model"):

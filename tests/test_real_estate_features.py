@@ -106,6 +106,7 @@ class RealEstateFeatureEngineeringTests(unittest.TestCase):
         self.assertEqual(engineered.loc[0, "street"], "Nepoznato")
         self.assertEqual(engineered.loc[0, "heating_type"], "Nepoznato")
         self.assertEqual(engineered.loc[0, "parking"], "Nepoznato")
+        self.assertEqual(engineered.loc[0, "city_region"], "Beograd | Vracar")
 
         self.assertEqual(engineered.loc[1, "price_per_m2"], 2000.0)
         self.assertTrue(pd.isna(engineered.loc[1, "building_age"]))
@@ -116,6 +117,7 @@ class RealEstateFeatureEngineeringTests(unittest.TestCase):
         self.assertEqual(engineered.loc[1, "is_penthouse"], 0)
         self.assertEqual(engineered.loc[1, "is_duplex"], 0)
         self.assertEqual(engineered.loc[1, "street"], "Nepoznato")
+        self.assertEqual(engineered.loc[1, "city_region"], "Novi Sad | Grbavica")
 
     def test_add_model_features_leaves_source_dataframe_unchanged(self):
         df = pd.DataFrame(

@@ -2,7 +2,11 @@
 
 from __future__ import annotations
 
+import numpy as np
+from catboost import CatBoostRegressor
+
 from sklearn.compose import ColumnTransformer
+from sklearn.compose import TransformedTargetRegressor
 from sklearn.dummy import DummyRegressor
 from sklearn.ensemble import (
     ExtraTreesRegressor,
@@ -16,6 +20,9 @@ from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OneHotEncoder, StandardScaler
 
 from src.features import MODEL_CATEGORICAL_FEATURES, MODEL_NUMERIC_FEATURES
+
+
+LOG_TARGET_SUFFIX = "_log_target"
 
 
 def get_model_feature_columns() -> list[str]:
@@ -59,10 +66,11 @@ def build_regressor(model_name: str):
             min_samples_leaf=2,
         ),
         "extra_trees": ExtraTreesRegressor(
-            n_estimators=160,
+            n_estimators=400,
             random_state=42,
             n_jobs=-1,
-            min_samples_leaf=2,
+            min_samples_leaf=1,
+            max_features=0.8,
         ),
         "gradient_boosting": GradientBoostingRegressor(
             n_estimators=180,
@@ -77,6 +85,17 @@ def build_regressor(model_name: str):
             learning_rate=0.08,
             l2_regularization=0.05,
         ),
+        "catboost": CatBoostRegressor(
+            iterations=700,
+            learning_rate=0.05,
+            depth=6,
+            loss_function="MAE",
+            random_seed=42,
+            verbose=False,
+            allow_writing_files=False,
+            thread_count=-1,
+            cat_features=tuple(MODEL_CATEGORICAL_FEATURES),
+        ),
     }
     if model_name not in regressors:
         supported = ", ".join(sorted(regressors))
@@ -86,9 +105,26 @@ def build_regressor(model_name: str):
 
 def build_model_pipeline(model_name: str) -> Pipeline:
     """Build a complete preprocessing + regression pipeline."""
-    return Pipeline(
-        [
-            ("preprocessor", build_preprocessor()),
-            ("regressor", build_regressor(model_name)),
-        ]
-    )
+    use_log_target = model_name.endswith(LOG_TARGET_SUFFIX)
+    base_model_name = model_name.removesuffix(LOG_TARGET_SUFFIX)
+    regressor = build_regressor(base_model_name)
+
+    if base_model_name == "catboost":
+        estimator = regressor
+    else:
+        estimator = Pipeline(
+            [
+                ("preprocessor", build_preprocessor()),
+                ("regressor", regressor),
+            ]
+        )
+
+    if use_log_target:
+        return TransformedTargetRegressor(
+            regressor=estimator,
+            func=np.log1p,
+            inverse_func=np.expm1,
+            check_inverse=False,
+        )
+
+    return estimator

@@ -10,6 +10,7 @@ readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
   "beautifulsoup4>=4.14.3",
+  "catboost>=1.2.8",
   "ipykernel>=7.2.0",
   "joblib>=1.5.3",
   "jupyter>=1.1.1",

@@ -70,6 +70,7 @@ class RealEstatePredictionTests(unittest.TestCase):
         self.assertEqual(frame[get_model_feature_columns()].columns.tolist(), get_model_feature_columns())
         self.assertEqual(frame.loc[0, "city"], "Beograd")
         self.assertEqual(frame.loc[0, "region"], "Vracar")
+        self.assertEqual(frame.loc[0, "city_region"], "Beograd | Vracar")
         self.assertEqual(frame.loc[0, "is_lux"], 1)
         self.assertEqual(frame.loc[0, "floor"], 3.0)
         self.assertEqual(frame.loc[0, "total_floors"], 6.0)

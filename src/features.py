@@ -21,7 +21,7 @@ MODEL_NUMERIC_FEATURES = [
     "is_duplex",
 ]
 
-MODEL_CATEGORICAL_FEATURES = ["city", "region", "heating_type", "parking"]
+MODEL_CATEGORICAL_FEATURES = ["city", "region", "city_region", "heating_type", "parking"]
 
 TEXT_FEATURE_COLUMNS = ["is_lux", "is_penthouse", "is_duplex"]
 CATEGORICAL_COLUMNS_TO_NORMALIZE = [
@@ -105,6 +105,10 @@ def add_model_features(df: pd.DataFrame, current_year: int = 2026) -> pd.DataFra
         model_df["year_built"].notna(),
         current_year - model_df["year_built"],
         np.nan,
+    )
+
+    model_df["city_region"] = (
+        model_df["city"].astype(str) + " | " + model_df["region"].astype(str)
     )
 
     text = (

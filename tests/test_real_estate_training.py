@@ -68,6 +68,10 @@ class RealEstateTrainingTests(unittest.TestCase):
             "random_forest",
             "gradient_boosting",
             "extra_trees",
+            "extra_trees_log_target",
+            "hist_gradient_boosting_log_target",
+            "catboost",
+            "catboost_log_target",
         ]:
             with self.subTest(required_key=required_key):
                 self.assertIn(required_key, candidate_keys)

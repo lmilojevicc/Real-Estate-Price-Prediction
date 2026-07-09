@@ -67,7 +67,7 @@ The detailed dataset schema and derived columns are documented in [`docs/dataset
 The model uses the following features:
 
 - numeric and boolean-like features: `area_m2`, `rooms`, `floor`, `total_floors`, `is_last_floor`, `year_built`, `building_age`, `is_lux`, `is_penthouse`, `is_duplex`,
-- categorical features: `city`, `region`, `heating_type`, `parking`.
+- categorical features: `city`, `region`, `city_region`, `heating_type`, `parking`.
 
 The derived column `price_per_m2` is useful for analysis and visualization, but it is intentionally excluded from the model inputs because it is calculated from the target column `price_eur` and would cause target leakage.
 
@@ -75,22 +75,22 @@ The derived column `price_per_m2` is useful for analysis and visualization, but 
 
 - **Dataset validation** — checks expected columns, minimum row count, and parseable numeric values.
 - **Data cleaning** — deduplicates listings and filters unrealistic area, price, room-count, and construction-year values.
-- **Feature engineering** — parses floor information, estimates total floors, detects last-floor listings, calculates building age, and extracts text signals such as luxury, penthouse, and duplex indicators.
-- **Model pipeline** — uses a `scikit-learn` pipeline with numeric imputation, numeric scaling, categorical imputation, and one-hot encoding.
-- **Model comparison** — trains and compares baseline, linear, regularized, tree-based, and boosting regressors.
+- **Feature engineering** — parses floor information, estimates total floors, detects last-floor listings, calculates building age, combines city and region into a location interaction, and extracts text signals such as luxury, penthouse, and duplex indicators.
+- **Model pipeline** — uses numeric imputation, numeric scaling, categorical imputation, one-hot encoding, optional log-target training, and CatBoost for native categorical modeling.
+- **Model comparison** — trains and compares baseline, linear, regularized, tuned tree-based, boosting, log-target, and CatBoost regressors.
 - **Model registry** — stores the best model, all trained models, metrics, UI options, feature contract, and cleaning summary.
 - **Streamlit dashboard** — provides an interactive prediction form, exploratory data analysis views, model-comparison charts, and a project overview.
 - **Unit tests** — cover data loading, cleaning, feature engineering, preprocessing, training, prediction, scraper utilities, notebooks, and the Streamlit dashboard.
 
 ## Model Results
 
-The best currently saved model is **ExtraTreesRegressor**.
+The best currently saved model is **ExtraTreesRegressor** with tuned tree parameters and the added `city_region` feature.
 
 | Metric |       Value |
 | ------ | ----------: |
-| MAE    | ~31,151 EUR |
-| RMSE   | ~58,656 EUR |
-| R²     |      ~0.846 |
+| MAE    | ~28,505 EUR |
+| RMSE   | ~55,839 EUR |
+| R²     |      ~0.860 |
 
 Model artifacts are stored in [`models/`](models/):
 
@@ -117,7 +117,7 @@ Optionally activate the virtual environment:
 source .venv/bin/activate
 ```
 
-The main dependencies include `pandas`, `scikit-learn`, `streamlit`, `matplotlib`, `seaborn`, `beautifulsoup4`, `requests`, `joblib`, `jupyter`, and `tqdm`. The full dependency list is defined in [`pyproject.toml`](pyproject.toml).
+The main dependencies include `pandas`, `scikit-learn`, `catboost`, `streamlit`, `matplotlib`, `seaborn`, `beautifulsoup4`, `requests`, `joblib`, `jupyter`, and `tqdm`. The full dependency list is defined in [`pyproject.toml`](pyproject.toml).
 
 ## Running the Project
 

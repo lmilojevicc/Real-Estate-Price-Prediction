@@ -34,6 +34,7 @@ Izvedeni atributi nastaju u reusable kodu i notebook tokovima pre modelovanja.
 | `raw_floor_string` | `floor` | float | Parsirana spratnost; suteren je `-1.0`, prizemlje je `0.0`, a nepoznato ostaje `NaN`. | 3.0 |
 | `raw_floor_string` | `total_floors` | float | Ukupan broj spratova parsiran iz formata kao što je `3/5`; `NaN` ako nedostaje. | 5.0 |
 | `floor`, `total_floors` | `is_last_floor` | float | `1` ako je stan na poslednjem spratu, `0` ako nije, `NaN` ako podaci nisu dostupni. | 1 |
+| `city`, `region` | `city_region` | string | Spojena lokacijska kategorija koja čuva interakciju grada i opštine/naselja. | `Beograd \| Vracar` |
 
 ## Model input contract
 
@@ -41,7 +42,7 @@ Ulazni atributi modela su:
 
 ```text
 area_m2, rooms, floor, total_floors, is_last_floor, year_built, building_age,
-is_lux, is_penthouse, is_duplex, city, region, heating_type, parking
+is_lux, is_penthouse, is_duplex, city, region, city_region, heating_type, parking
 ```
 
 Ciljna kolona je `price_eur`. Kolone izvedene direktno iz ciljne promenljive, posebno `price_per_m2`, ne ulaze u model da ne bi došlo do curenja ciljne informacije.

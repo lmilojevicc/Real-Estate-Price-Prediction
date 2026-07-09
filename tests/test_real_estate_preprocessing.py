@@ -13,6 +13,7 @@ class RealEstatePreprocessingTests(unittest.TestCase):
 
         self.assertIn("area_m2", feature_columns)
         self.assertIn("city", feature_columns)
+        self.assertIn("city_region", feature_columns)
         self.assertNotIn("price_eur", feature_columns)
 
     def test_preprocessing_and_model_pipeline_feature_columns_match(self):
@@ -34,6 +35,7 @@ class RealEstatePreprocessingTests(unittest.TestCase):
                     "is_duplex": 0,
                     "city": "Beograd",
                     "region": "Vracar",
+                    "city_region": "Beograd | Vracar",
                     "heating_type": "Centralno",
                     "parking": "Da",
                 },
@@ -50,6 +52,7 @@ class RealEstatePreprocessingTests(unittest.TestCase):
                     "is_duplex": 1,
                     "city": "Novi Sad",
                     "region": None,
+                    "city_region": "Novi Sad | Nepoznato",
                     "heating_type": None,
                     "parking": "Ne",
                 },
