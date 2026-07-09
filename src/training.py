@@ -35,6 +35,8 @@ DEFAULT_MODEL_CANDIDATES: list[tuple[str, str]] = [
     ("HistGradientBoostingRegressor log target", "hist_gradient_boosting_log_target"),
     ("CatBoostRegressor", "catboost"),
     ("CatBoostRegressor log target", "catboost_log_target"),
+    ("XGBoostRegressor", "xgboost"),
+    ("XGBoostRegressor log target", "xgboost_log_target"),
 ]
 
 

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import numpy as np
 from catboost import CatBoostRegressor
+from xgboost import XGBRegressor
 
 from sklearn.compose import ColumnTransformer
 from sklearn.compose import TransformedTargetRegressor
@@ -66,7 +67,7 @@ def build_regressor(model_name: str):
             min_samples_leaf=2,
         ),
         "extra_trees": ExtraTreesRegressor(
-            n_estimators=400,
+            n_estimators=800,
             random_state=42,
             n_jobs=-1,
             min_samples_leaf=1,
@@ -95,6 +96,20 @@ def build_regressor(model_name: str):
             allow_writing_files=False,
             thread_count=-1,
             cat_features=tuple(MODEL_CATEGORICAL_FEATURES),
+        ),
+        "xgboost": XGBRegressor(
+            n_estimators=500,
+            learning_rate=0.05,
+            max_depth=9,
+            min_child_weight=1,
+            subsample=0.8,
+            colsample_bytree=0.8,
+            reg_lambda=1.0,
+            objective="reg:squarederror",
+            eval_metric="mae",
+            random_state=42,
+            n_jobs=-1,
+            tree_method="hist",
         ),
     }
     if model_name not in regressors:

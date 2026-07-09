@@ -79,6 +79,8 @@ class ModelTrainingPipelineTests(unittest.TestCase):
             "hist_gradient_boosting_log_target",
             "catboost",
             "catboost_log_target",
+            "xgboost",
+            "xgboost_log_target",
         ]:
             with self.subTest(model_key=model_key):
                 model = build_model_pipeline(model_key)

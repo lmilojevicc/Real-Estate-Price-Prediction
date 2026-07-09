@@ -72,6 +72,8 @@ class RealEstateTrainingTests(unittest.TestCase):
             "hist_gradient_boosting_log_target",
             "catboost",
             "catboost_log_target",
+            "xgboost",
+            "xgboost_log_target",
         ]:
             with self.subTest(required_key=required_key):
                 self.assertIn(required_key, candidate_keys)
